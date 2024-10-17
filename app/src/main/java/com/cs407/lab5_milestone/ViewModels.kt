@@ -1,12 +1,21 @@
 package com.cs407.lab5_milestone
 
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
-data class UserState(/* Delete `void` and Add what you want */val void: String = "")
+data class UserState(
+    val id: Int = 0, val name: String = "", val passwd: String = ""
+)
 
-/* Use UserViewModel to cache user state (userId, userName, etc.)
-    Don't forget to clean the state when log out/delete account
- */
-/* Ref: https://developer.android.com/topic/libraries/architecture/viewmodel */
 class UserViewModel : ViewModel() {
+    private val _userState = MutableStateFlow(UserState())
+    val userState = _userState.asStateFlow()
+
+    fun setUser(state: UserState) {
+        _userState.update {
+            state
+        }
+    }
 }
