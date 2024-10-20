@@ -24,10 +24,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cs407.lab5_milestone.data.Note
 import com.cs407.lab5_milestone.data.NoteDatabase
 import com.cs407.lab5_milestone.data.NoteSummary
+import com.cs407.lab5_milestone.data.User
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 class NoteListFragment(
@@ -57,7 +60,7 @@ class NoteListFragment(
             injectedUserViewModel
         } else {
             // TODO - Use ViewModelProvider to init UserViewModel
-            UserViewModel()
+            ViewModelProvider(requireActivity())[UserViewModel::class.java]
         }
 
         // Manually create 1000 notes for "large" user
@@ -147,14 +150,21 @@ class NoteListFragment(
         val userState = userViewModel.userState.value
 
         // TODO: Set up paging configuration with a specified page size and prefetch distance
+        val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10)
 
         // TODO: Implement a query to retrieve the paged list of notes associated with the user
-
+        val pager = Pager(pagingConfig) {
+            noteDB.userDao().getUsersWithNoteListsByIdPaged(userState.id)
+        }
         // TODO: Launch a coroutine to collect the paginated flow and submit it to the RecyclerView adapter
-
+        lifecycleScope.launch{
+            pager.flow.cachedIn(lifecycleScope).collect{
+                pagingData -> adapter.submitData(pagingData)
+            }
+        }
         // TODO: Cache the paging flow in the lifecycle scope and collect the paginated data
-
         // TODO: Submit the paginated data to the adapter to display it in the RecyclerView
+
     }
 
 
@@ -172,15 +182,20 @@ class NoteListFragment(
 
             deleteButton.setOnClickListener {
                 // TODO: Launch a coroutine to perform the note deletion in the background
-
+                lifecycleScope.launch(Dispatchers.IO){
+                    noteDB.deleteDao().deleteNotes(listOf(noteToDelete.noteId))
+                }
                 // TODO: Implement the logic to delete the note from the Room database using the DAO
 
                 // TODO: Reset any flags or variables that control the delete state
-                deleteIt = false // Example of resetting a flag after deletion
-
+                cancelButton.setOnClickListener {
+                    deleteIt = false
+                    bottomSheetDialog.dismiss()
+                }
+                bottomSheetDialog.setOnDismissListener {
+                    deleteIt = false
+                }
                 // TODO: Dismiss the bottom sheet dialog after the deletion is completed
-                bottomSheetDialog.dismiss()
-
                 // TODO: Reload the list of notes to reflect the deleted note (e.g., refresh UI)
                 loadNotes() // Implement the function to refresh or reload the notes
             }
@@ -200,15 +215,25 @@ class NoteListFragment(
 
     private fun deleteAccountAndLogout() {
         // TODO: Retrieve the current user state from the ViewModel (contains user details)
-
+        val userState = userViewModel.userState.value
         // TODO: Launch a coroutine to perform account deletion in the background
+        lifecycleScope.launch(Dispatchers.IO){
+            val deleteDao = noteDB.deleteDao()
+            deleteDao.delete(userState.id)
 
+            val editor = userPasswdKV.edit()
+            editor.remove(userState.name)
+            editor.remove("currentUserName")
+            editor.apply()
+
+            userViewModel.setUser(UserState())
+            withContext(Dispatchers.Main) {
+                findNavController().navigate(R.id.action_noteListFragment_to_loginFragment)
+            }
+        }
         // TODO: Implement the logic to delete the user's data from the Room database
-
         // TODO: Remove the user's credentials from SharedPreferences
-
         // TODO: Reset the user state in the ViewModel to represent a logged-out state
-
         // TODO: Navigate back to the login screen after the account is deleted and user is logged out
     }
 }

@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.Calendar
+import java.util.Date
 
 class NoteContentFragment(
     private val injectedUserViewModel: UserViewModel? = null
@@ -41,7 +42,7 @@ class NoteContentFragment(
             injectedUserViewModel
         } else {
             // TODO - Use ViewModelProvider to init UserViewModel
-            UserViewModel()
+            ViewModelProvider(requireActivity())[UserViewModel::class.java]
         }
         userId = userViewModel.userState.value.id
     }
@@ -65,7 +66,19 @@ class NoteContentFragment(
 
         if (noteId != 0) {
             // TODO: Launch a coroutine to fetch the note from the database in the background
+            lifecycleScope.launch(Dispatchers.IO) {
+                val note = noteDB.noteDao().getById(noteId)
+                val content = if(note.notePath!= null){
+                    readNoteContentFromFile(note.notePath)
+                }else{
+                    note.noteDetail
+                }
 
+                withContext(Dispatchers.Main){
+                    titleEditText.setText(note.noteTitle)
+                    contentEditText.setText(content)
+                }
+            }
             // TODO: Retrieve the note from the Room database using the noteId
 
             // TODO: Check if the note content is stored in the database or in a file
@@ -84,6 +97,10 @@ class NoteContentFragment(
         saveButton.setOnClickListener {
             saveContent()
         }
+    }
+    private fun readNoteContentFromFile(filePath: String): String {
+        val file = File(filePath)
+        return file.readText()
     }
 
     private fun setupMenu() {
@@ -124,7 +141,33 @@ class NoteContentFragment(
 
     private fun saveContent() {
         // TODO: Retrieve the title and content from EditText fields
+        val title = titleEditText.text.toString()
+        val content = contentEditText.text.toString()
 
+        if (title.isEmpty() || content.isEmpty()) return
+
+        lifecycleScope.launch(Dispatchers.IO){
+            val filePath: String? = if (content.length > 1024){
+                saveNoteContentToFile(userId, content)
+            }else{
+                null
+            }
+
+            val newNote = Note(
+                noteId = if (noteId == 0) 0 else noteId,
+                noteTitle = title,
+                noteAbstract = splitAbstractDetail(content),
+                noteDetail = if (filePath == null) content else null,
+                notePath = filePath,
+                lastEdited = Date()
+            )
+
+            noteDB.noteDao().upsertNote(newNote, userId)
+
+            withContext(Dispatchers.Main){
+                findNavController().popBackStack()
+            }
+        }
         // TODO: Launch a coroutine to save the note in the background (non-UI thread)
 
         // TODO: Check if the note content is too large for direct storage in the database
@@ -144,7 +187,15 @@ class NoteContentFragment(
         // TODO: Switch back to the main thread to navigate the UI after saving
 
         // TODO: Navigate back to the previous screen (e.g., after saving the note)
-        findNavController().popBackStack()
+    }
+
+    private fun saveNoteContentToFile(userId: Int, content: String): String {
+        val timestamp = System.currentTimeMillis()
+        val fileName = "note-$userId-$noteId-$timestamp.txt"
+        val fileDir = requireContext().filesDir
+        val file = File(fileDir, fileName)
+        file.writeText(content)
+        return file.absolutePath
     }
 
     private fun splitAbstractDetail(content: String?): String {
