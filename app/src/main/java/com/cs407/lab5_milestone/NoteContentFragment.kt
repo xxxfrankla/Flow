@@ -152,6 +152,7 @@ class NoteContentFragment(
         val content = contentEditText.text.toString()
 
         lifecycleScope.launch(Dispatchers.IO) {
+
             val notePath: String? = if(content.length > 1024){
                 saveNoteContentToFile(userId, content)
             }else{
@@ -189,12 +190,12 @@ class NoteContentFragment(
         // TODO: Navigate back to the previous screen (e.g., after saving the note)
 
     private fun saveNoteContentToFile(userId: Int, content: String): String {
-        val timestamp = System.currentTimeMillis()
+        val timestamp = Calendar.getInstance().time.time
         val fileName = "note-$userId-$noteId-$timestamp.txt"
         val fileDir = requireContext().filesDir
         val file = File(fileDir, fileName)
         file.writeText(content)
-        return file.absolutePath
+        return fileName
     }
 
     private fun splitAbstractDetail(content: String?): String {
