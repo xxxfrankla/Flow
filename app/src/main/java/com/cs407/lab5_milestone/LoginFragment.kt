@@ -72,7 +72,7 @@ class LoginFragment(
             if (username.isEmpty() || password.isEmpty()) {
                 errorTextView.visibility = View.VISIBLE
             }else{
-                lifecycleScope.launch(Dispatchers.IO) {
+                viewLifecycleOwner.lifecycleScope.launch {
                     val ins = withContext(Dispatchers.IO) {getUserPasswd(username, password)}
                     if (ins) {
                         val userId = withContext(Dispatchers.IO){noteDB.userDao().getByName(username).userId}

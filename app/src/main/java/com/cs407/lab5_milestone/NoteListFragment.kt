@@ -186,7 +186,7 @@ class NoteListFragment(
 
             deleteButton.setOnClickListener {
                 // TODO: Launch a coroutine to perform the note deletion in the background
-                lifecycleScope.launch(Dispatchers.IO){
+                lifecycleScope.launch{
                     noteDB.deleteDao().deleteNotes(listOf(noteToDelete.noteId))
                     deleteIt = false
                     bottomSheetDialog.dismiss()
@@ -195,16 +195,8 @@ class NoteListFragment(
                 // TODO: Implement the logic to delete the note from the Room database using the DAO
 
                 // TODO: Reset any flags or variables that control the delete state
-                cancelButton.setOnClickListener {
-                    deleteIt = false
-                    bottomSheetDialog.dismiss()
-                }
-                bottomSheetDialog.setOnDismissListener {
-                    deleteIt = false
-                }
                 // TODO: Dismiss the bottom sheet dialog after the deletion is completed
                 // TODO: Reload the list of notes to reflect the deleted note (e.g., refresh UI)
-                loadNotes() // Implement the function to refresh or reload the notes
             }
 
             cancelButton.setOnClickListener {
