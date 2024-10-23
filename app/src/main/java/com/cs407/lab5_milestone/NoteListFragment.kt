@@ -28,6 +28,7 @@ import com.cs407.lab5_milestone.data.User
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -55,7 +56,8 @@ class NoteListFragment(
         super.onCreate(savedInstanceState)
         noteDB = NoteDatabase.getDatabase(requireContext())
         userPasswdKV = requireContext().getSharedPreferences(
-            getString(R.string.userPasswdKV), Context.MODE_PRIVATE)
+            getString(R.string.userPasswdKV), Context.MODE_PRIVATE
+        )
         userViewModel = if (injectedUserViewModel != null) {
             injectedUserViewModel
         } else {
@@ -110,10 +112,12 @@ class NoteListFragment(
                         findNavController().navigate(R.id.action_noteListFragment_to_loginFragment)
                         true
                     }
+
                     R.id.action_delete_account -> {
                         deleteAccountAndLogout()
                         true
                     }
+
                     else -> false
                 }
             }
@@ -124,7 +128,8 @@ class NoteListFragment(
 
         adapter = NoteAdapter(
             onClick = { noteId ->
-                val action = NoteListFragmentDirections.actionNoteListFragmentToNoteContentFragment(noteId)
+                val action =
+                    NoteListFragmentDirections.actionNoteListFragmentToNoteContentFragment(noteId)
                 findNavController().navigate(action)
             },
             onLongClick = { noteSummary ->
@@ -153,19 +158,18 @@ class NoteListFragment(
         val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10)
 
         // TODO: Implement a query to retrieve the paged list of notes associated with the user
-        val pager = Pager(pagingConfig) {
-            noteDB.userDao().getUsersWithNoteListsByIdPaged(userState.id)
-        }
+        val pager = Pager(
+            config = pagingConfig,
+            pagingSourceFactory = {
+                noteDB.userDao().getUsersWithNoteListsByIdPaged(userState.id)
+            }).flow
         // TODO: Launch a coroutine to collect the paginated flow and submit it to the RecyclerView adapter
-        lifecycleScope.launch{
-            pager.flow.cachedIn(lifecycleScope).collect{
-                pagingData -> adapter.submitData(pagingData)
-            }
+        lifecycleScope.launch {
+            pager.collectLatest { pagingData -> adapter.submitData(pagingData) }
         }
-        // TODO: Cache the paging flow in the lifecycle scope and collect the paginated data
-        // TODO: Submit the paginated data to the adapter to display it in the RecyclerView
-
     }
+    // TODO: Cache the paging flow in the lifecycle scope and collect the paginated data
+    // TODO: Submit the paginated data to the adapter to display it in the RecyclerView
 
 
     private fun showDeleteBottomSheet() {
@@ -184,6 +188,9 @@ class NoteListFragment(
                 // TODO: Launch a coroutine to perform the note deletion in the background
                 lifecycleScope.launch(Dispatchers.IO){
                     noteDB.deleteDao().deleteNotes(listOf(noteToDelete.noteId))
+                    deleteIt = false
+                    bottomSheetDialog.dismiss()
+                    loadNotes()
                 }
                 // TODO: Implement the logic to delete the note from the Room database using the DAO
 
@@ -221,13 +228,14 @@ class NoteListFragment(
             val deleteDao = noteDB.deleteDao()
             deleteDao.delete(userState.id)
 
-            val editor = userPasswdKV.edit()
-            editor.remove(userState.name)
-            editor.remove("currentUserName")
-            editor.apply()
+            with(userPasswdKV.edit()){
+                remove(userState.name)
+                apply()
+            }
 
-            userViewModel.setUser(UserState())
+
             withContext(Dispatchers.Main) {
+                userViewModel.setUser(UserState())
                 findNavController().navigate(R.id.action_noteListFragment_to_loginFragment)
             }
         }

@@ -61,11 +61,9 @@ class LoginFragment(
         usernameEditText.doAfterTextChanged {
             errorTextView.visibility = View.GONE
         }
-
         passwordEditText.doAfterTextChanged {
             errorTextView.visibility = View.GONE
         }
-
         // Set the login button click action
         loginButton.setOnClickListener {
             // TODO: Get the entered username and password from EditText fields
@@ -73,17 +71,15 @@ class LoginFragment(
             val password = passwordEditText.text.toString()
             if (username.isEmpty() || password.isEmpty()) {
                 errorTextView.visibility = View.VISIBLE
-            } else {
-                lifecycleScope.launch {
-                    val success = withContext(Dispatchers.IO) {
-                        getUserPasswd(username, password)
-                    }
-                    if (success) {
-                        // Set the user in the ViewModel
-                        userViewModel.setUser(UserState(id = 0, name = username, passwd = password))
-
-                        // Navigate to the Note List Fragment
-                        findNavController().navigate(R.id.action_loginFragment_to_noteListFragment)
+            }else{
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val ins = withContext(Dispatchers.IO) {getUserPasswd(username, password)}
+                    if (ins) {
+                        val userId = withContext(Dispatchers.IO){noteDB.userDao().getByName(username).userId}
+                        withContext(Dispatchers.Main) {
+                            userViewModel.setUser(UserState(userId, username, password))
+                            findNavController().navigate(R.id.noteListFragment)
+                        }
                     } else {
                         errorTextView.visibility = View.VISIBLE
                     }
@@ -92,28 +88,30 @@ class LoginFragment(
         }
     }
 
+
     private suspend fun getUserPasswd(
         name: String,
         passwdPlain: String
     ): Boolean {
         // TODO: Hash the plain password using a secure hashing function
         val hashedPassword = hash(passwdPlain)
-        val storedPasswordHash = userPasswdKV.getString(name, null)
-        // TODO: Check if the user exists in SharedPreferences (using the username as the key)
-        return if (storedPasswordHash != null) {
-            storedPasswordHash == hashedPassword
-        } else {
-            withContext(Dispatchers.IO) {
-                val userDao = noteDB.userDao()
-                val newUser = User(userName = name)
-                userDao.insert(newUser)
+        if (userPasswdKV.contains(name)) {
+            val passwordInKV = userPasswdKV.getString(name, null)
+            if (hashedPassword != passwordInKV) {
+                return false
             }
-            userPasswdKV.edit().apply {
+        }else {
+            withContext(Dispatchers.IO) {
+                noteDB.userDao().insert(User(userName = name))
+            }
+            with(userPasswdKV.edit()) {
                 putString(name, hashedPassword)
                 apply()
             }
-            true
         }
+        return true
+    }
+
 
         // TODO: Retrieve the stored password from SharedPreferences
 
@@ -126,7 +124,6 @@ class LoginFragment(
         // TODO: Store the hashed password in SharedPreferences for future logins
 
         // TODO: Return true if the user login is successful or the user was newly created
-    }
 
     private fun hash(input: String): String {
         return MessageDigest.getInstance("SHA-256").digest(input.toByteArray())
