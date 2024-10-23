@@ -76,10 +76,8 @@ class LoginFragment(
                     val ins = withContext(Dispatchers.IO) {getUserPasswd(username, password)}
                     if (ins) {
                         val userId = withContext(Dispatchers.IO){noteDB.userDao().getByName(username).userId}
-                        withContext(Dispatchers.Main) {
-                            userViewModel.setUser(UserState(userId, username, password))
-                            findNavController().navigate(R.id.noteListFragment)
-                        }
+                        userViewModel.setUser(UserState(userId, username, password))
+                        findNavController().navigate(R.id.action_loginFragment_to_noteListFragment)
                     } else {
                         errorTextView.visibility = View.VISIBLE
                     }
@@ -111,8 +109,6 @@ class LoginFragment(
         }
         return true
     }
-
-
         // TODO: Retrieve the stored password from SharedPreferences
 
         // TODO: Compare the hashed password with the stored one and return false if they don't match
