@@ -72,7 +72,8 @@ class NoteContentFragment(
                 var content: String? = note?.noteDetail
                 withContext(Dispatchers.IO){
                     if(note.notePath!= null){
-                        content = readNoteContentFromFile(note.notePath)
+                        val file = File(context?.filesDir, note.notePath)
+                        content = file.readText()
                     }
                 }
 
@@ -140,7 +141,9 @@ class NoteContentFragment(
 
     override fun onDestroyView() {
         super.onDestroyView()
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        if (activity is AppCompatActivity) {
+            (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        }
     }
 
     private fun saveContent() {
