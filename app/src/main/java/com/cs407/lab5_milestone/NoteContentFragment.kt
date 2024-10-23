@@ -67,7 +67,7 @@ class NoteContentFragment(
 
         if (noteId != 0) {
             // TODO: Launch a coroutine to fetch the note from the database in the background
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch{
                 val note = noteDB.noteDao().getById(noteId)
                 var content: String? = note?.noteDetail
                 withContext(Dispatchers.IO){
@@ -147,16 +147,28 @@ class NoteContentFragment(
         // Retrieve the title and content from EditText fields
         val title = titleEditText.text.toString()
         val content = contentEditText.text.toString()
-        val sharedPref = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val username = sharedPref.getString("currentUserName", "User")
 
         lifecycleScope.launch(Dispatchers.IO) {
-            val db = NoteDatabase.getDatabase(requireContext())
-            val userDao = db.userDao()
-            val noteDao = db.noteDao()
-            val user = userDao.getByName(username ?: "User")
-            withContext(Dispatchers.Main) {
-                findNavController().popBackStack()
+            val notePath: String? = if(content.length > 1024){
+                saveNoteContentToFile(userId, content)
+            }else{
+                null
+            }
+            val noteAbstract = splitAbstractDetail(content)
+            val note = Note(
+                noteId = if(noteId== 0) 0 else noteId,
+                noteTitle = title,
+                noteAbstract = noteAbstract,
+                noteDetail = if (notePath == null) content else null,
+                notePath = notePath,
+                lastEdited = Calendar.getInstance().time
+            )
+            noteDB.noteDao().upsertNote(note, userId)
+
+            withContext(Dispatchers.Main){
+                if(isAdded && view != null){
+                    findNavController().popBackStack()
+                }
             }
         }
     }
