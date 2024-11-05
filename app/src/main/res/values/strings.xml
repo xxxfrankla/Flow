@@ -1,3 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Flow</string>
+    <string name="welcome_main_page">Welcome to Main Page</string>
+    <string name="start">Start</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="to_do_list">TO DO LIST</string>
+    <string name="username_hint">Enter Username</string>
+    <string name="password_hint">Enter Password</string>
+    <string name="login_button">Log In or Sign Up</string>
+    <string name="userPasswdKV">com.cs407.lab5_milestone.userPasswdKV</string>
+    <string name="fail_login">Wrong Username or Password</string>
+    <string name="login_screen">LoginScreen</string>
+    <string name="note_list_screen">NoteListScreen</string>
+    <string name="note_database">noteDatabase</string>
+    <string name="note_content_screen">NoteContentScreen</string>
+    <string name="save_button">Save</string>
+    <string name="logout">Log Out</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="greeting_text">Welcome %1$s!</string>
+    <string-array name="spinner_items">
+        <item>Category: study</item>
+        <item>Category: work</item>
+        <item>Category: entertain/social activities</item>
+    </string-array>
+
 </resources>
