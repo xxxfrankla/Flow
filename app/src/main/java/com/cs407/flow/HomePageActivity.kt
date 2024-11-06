@@ -21,7 +21,7 @@ class HomePageActivity : AppCompatActivity() {
         // Set up Dashboard Button to navigate to DashboardActivity
         val dashboardButton: Button = findViewById(R.id.dashboard_button)
         dashboardButton.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this@HomePageActivity, NoteContentFragment::class.java)
             startActivity(intent)
         }
     }
