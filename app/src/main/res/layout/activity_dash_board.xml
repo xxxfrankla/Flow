@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id = "@+id/dashBoard"
+    android:padding="16dp">
+
+    <!-- Month Display -->
+    <TextView
+        android:id="@+id/monthTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="November"
+        android:textSize="24sp"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="16dp"
+        android:clickable = "true"/>
+
+    <!-- Week Buttons -->
+    <LinearLayout
+        android:id="@+id/weekButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/week1Button"
+            android:layout_width="10dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Week 1"
+            android:layout_marginEnd="4dp"/>
+
+        <Button
+            android:id="@+id/week2Button"
+            android:layout_width="10dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Week 2"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"/>
+
+        <Button
+            android:id="@+id/week3Button"
+            android:layout_width="10dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Week 3"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"/>
+
+        <Button
+            android:id="@+id/week4Button"
+            android:layout_width="10dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Week 4"
+            android:layout_marginStart="4dp"/>
+    </LinearLayout>
+
+
+
+
+    <!-- Days and Events List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/dayEventRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"/>
+
+</LinearLayout>

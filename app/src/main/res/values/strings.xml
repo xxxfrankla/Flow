@@ -2,5 +2,9 @@
     <string name="app_name">Flow</string>
     <string name="welcome_main_page">Welcome to Flow</string>
     <string name="start">Start</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="to_do_list">ToDo</string>
 
 </resources>
