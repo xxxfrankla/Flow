@@ -1,20 +1,40 @@
 package com.cs407.flow
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+
 
 class HomePageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_home_page)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.homepage_layout)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        setContentView(R.layout.activity_homepage)
+
+        // Set up RecyclerView
+        val recyclerView: RecyclerView = findViewById(R.id.todo_list_recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = TaskAdapter(getDummyTasks())
+
+        // Set up Dashboard Button to navigate to DashboardActivity
+        val dashboardButton: Button = findViewById(R.id.dashboard_button)
+        dashboardButton.setOnClickListener {
+            val intent = Intent(this@HomePageActivity, DashBoardActivity::class.java)
+            startActivity(intent)
         }
     }
+
+    // Create dummy tasks for testing purposes
+    private fun getDummyTasks(): List<Task> {
+        val taskList = mutableListOf<Task>()
+        for (i in 0..17) {
+            taskList.add(Task("$i", "Item $i", "Description for item $i", System.currentTimeMillis() + 86400000))
+        }
+        return taskList
+    }
 }
+
+
+
