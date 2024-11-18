@@ -107,6 +107,6 @@
         app:layout_constraintEnd_toStartOf="@+id/editTextText4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleEditText"
-        android:entries="@array/spinner_items"/>/>
+        android:entries="@array/spinner_items"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
