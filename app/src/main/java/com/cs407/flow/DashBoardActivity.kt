@@ -1,32 +1,23 @@
-
-
-
 package com.cs407.flow
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupActionBarWithNavController
 
 class DashBoardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dash_board) // Your activity layout
+        setContentView(R.layout.activity_dash_board)
 
-        // Find FloatingActionButton and set up a click listener
-        val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener {
-            // Navigate to NoteContentFragment
-            navigateToFragment(NoteContentFragment())
-        }
+        // Set up the ActionBar with NavController
+        val navController = findNavController(R.id.nav_host_fragment)
+        setupActionBarWithNavController(navController)
     }
 
-    // Function to navigate to a fragment
-    private fun navigateToFragment(fragment: Fragment) {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragmentContainer, fragment) // Replace with the ID of your container
-        transaction.addToBackStack(null) // Add the transaction to back stack
-        transaction.commit()
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment)
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 }
