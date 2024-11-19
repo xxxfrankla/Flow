@@ -166,7 +166,7 @@ class NoteContentFragment(
                     lastEdited = lastEdited
                 )
 
-                noteDB.noteDao().upsertNote(note, userId)
+                noteDB.noteDao().upsert(note)
 
                 withContext(Dispatchers.Main) {
                     // Ensure NavController is available before navigating

@@ -2,84 +2,67 @@ package com.cs407.flow
 
 import android.content.Context
 import androidx.paging.PagingSource
-import androidx.room.ColumnInfo
-import androidx.room.Dao
-import androidx.room.Database
-import androidx.room.Delete
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.Insert
-import androidx.room.PrimaryKey
-import androidx.room.Query
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.room.Transaction
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
-import androidx.room.Update
-import androidx.room.Upsert
+import androidx.room.*
 import java.util.Date
 
-
-// Define your own @Entity, @Dao and @Database
-//User Entity with a unique ID on user name
+// User Entity: Represents a user with a unique userName
 @Entity(
-    indices = [Index(value = ["userName"], unique = true
-    )]
+    indices = [Index(value = ["userName"], unique = true)]
 )
 data class User(
     @PrimaryKey(autoGenerate = true) val userId: Int = 0,
-    val userName: String = ""
+    val userName: String
 )
 
-// Converter class to handle Date <-> Long type conversions
+// Converter for handling Date -> Long (timestamp) and vice versa
 class Converters {
     @TypeConverter
-    fun fromTimestamp(value: Long): Date{
-        return Date(value)
+    fun fromTimestamp(value: Long?): Date? {
+        return value?.let { Date(it) }
     }
 
     @TypeConverter
-    fun dateToTimestamp(date: Date): Long{
-        return date.time
+    fun dateToTimestamp(date: Date?): Long? {
+        return date?.time
     }
 }
 
-
-//Note Entity
+// Note Entity: Represents a note with title, abstract, optional content, and metadata
 @Entity
 data class Note(
-    @PrimaryKey(autoGenerate = true) val noteId: Int = 0, //auto-generated primary key for Note
-    val noteTitle: String, //Title of the note
-    val noteAbstract: String, // Short summary of the note
-    //Detailed content of the note (optional, might be null)
+    @PrimaryKey(autoGenerate = true) val noteId: Int = 0,
+    val noteTitle: String,
+    val noteAbstract: String,
     @ColumnInfo(typeAffinity = ColumnInfo.TEXT) val noteDetail: String?,
     val notePath: String?,
     val lastEdited: Date
 )
 
-//UserNoteRelation
+// Relationship Entity: Links users to their notes
 @Entity(
     primaryKeys = ["userId", "noteId"],
-    foreignKeys = [ForeignKey(
-        entity = User::class,
-        parentColumns = ["userId"],
-        childColumns = ["userId"],
-        onDelete = ForeignKey.CASCADE
-    ), ForeignKey(
-        entity = Note::class,
-        parentColumns = ["noteId"],
-        childColumns = ["noteId"],
-        onDelete = ForeignKey.CASCADE
-    )]
+    foreignKeys = [
+        ForeignKey(
+            entity = User::class,
+            parentColumns = ["userId"],
+            childColumns = ["userId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Note::class,
+            parentColumns = ["noteId"],
+            childColumns = ["noteId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index(value = ["userId", "noteId"])]
 )
 data class UserNoteRelation(
     val userId: Int,
     val noteId: Int
 )
-//Summary projection of the Note entity
-// A summary projection of the Note entity, for displaying limited fields in queries
+
+// Summary Projection for Notes
 data class NoteSummary(
     val noteId: Int,
     val noteTitle: String,
@@ -87,80 +70,37 @@ data class NoteSummary(
     val lastEdited: Date
 )
 
+// User Data Access Object
 @Dao
 interface UserDao {
+    @Query("SELECT * FROM User WHERE userName = :name")
+    suspend fun getByName(name: String): User?
 
-    // Query to get a User by their userName
-    @Query("SELECT * FROM user WHERE userName = :name")
-    suspend fun getByName(name: String): User
+    @Query("SELECT * FROM User WHERE userId = :id")
+    suspend fun getById(id: Int): User?
 
-    // Query to get a User by their userId
-    @Query("SELECT * FROM user WHERE userId = :id")
-    suspend fun getById(id: Int): User
-
-    // Query to get a list of NoteSummary for a user, ordered by lastEdited
-    @Query("""
-        SELECT * FROM User, Note, UserNoteRelation
-        WHERE User.userId = :id
-        AND UserNoteRelation.userId = User.userId
-        AND Note.noteId = UserNoteRelation.noteId
-        ORDER BY Note.lastEdited DESC
-    """)
-    suspend fun getUsersWithNoteListsById(id: Int): List<NoteSummary>
-
-    // Same query but returns a PagingSource for pagination
-    @Query("""
-        SELECT * FROM User, Note, UserNoteRelation
-        WHERE User.userId = :id
-        AND UserNoteRelation.userId = User.userId
-        AND Note.noteId = UserNoteRelation.noteId
-        ORDER BY Note.lastEdited DESC
-    """)
-    fun getUsersWithNoteListsByIdPaged(id: Int): PagingSource<Int, NoteSummary>
-
-    // Insert a new user into the database
-    @Insert(entity = User::class)
-    suspend fun insert(user: User)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(user: User): Long
 }
 
-
+// Note Data Access Object
 @Dao
 interface NoteDao {
 
-    // Query to get a Note by its noteId
-    @Query("SELECT * FROM note WHERE noteId = :id")
-    suspend fun getById(id: Int): Note
+    @Query("SELECT * FROM Note WHERE noteId = :id")
+    suspend fun getById(id: Int): Note?
 
-    // Query to get a Note's ID by its rowId (SQLite internal ID)
-    @Query("SELECT noteId FROM note WHERE rowid = :rowId")
-    suspend fun getByRowId(rowId: Long): Int
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(note: Note): Long
 
-    // Insert or update a Note (upsert operation)
-    @Upsert(entity = Note::class)
-    suspend fun upsert(note: Note): Long
+    @Query("DELETE FROM Note WHERE noteId = :id")
+    suspend fun deleteById(id: Int)
 
-    // Insert a relation between a user and a note
-    @Insert
-    suspend fun insertRelation(userAndNote: UserNoteRelation)
-
-    // Insert or update a Note and create a relation to the User if it's a new Note
     @Transaction
-    suspend fun upsertNote(note: Note, userId: Int) {
-        val rowId = upsert(note)
-        if (note.noteId == 0) { // New note
-            val noteId = getByRowId(rowId)
-            insertRelation(UserNoteRelation(userId, noteId))
-        }
+    suspend fun upsert(note: Note): Long {
+        val rowId = insert(note)
+        return rowId
     }
-
-    // Query to count the number of notes a user has
-    @Query("""
-        SELECT COUNT(*) FROM User, Note, UserNoteRelation
-        WHERE User.userId = :userId
-        AND UserNoteRelation.userId = User.userId
-        AND Note.noteId = UserNoteRelation.noteId
-    """)
-    suspend fun userNoteCount(userId: Int): Int
 
     @Query("""
         SELECT Note.noteId, Note.noteTitle, Note.noteAbstract, Note.lastEdited
@@ -169,68 +109,48 @@ interface NoteDao {
         WHERE UserNoteRelation.userId = :userId
         ORDER BY Note.lastEdited DESC
     """)
-    suspend fun getUsersWithNoteListsById(userId: Int): List<NoteSummary>
-
-    @Query("DELETE FROM note WHERE noteId = :noteId")
-    suspend fun deleteNoteById(noteId: Int)
+    fun getNoteSummariesByUserId(userId: Int): PagingSource<Int, NoteSummary>
 }
 
-
+// Deletion DAO for cascade operations
 @Dao
 interface DeleteDao {
+    @Query("DELETE FROM User WHERE userId = :userId")
+    suspend fun deleteUserById(userId: Int)
 
-    // Delete a user by their userId
-    @Query("DELETE FROM user WHERE userId = :userId")
-    suspend fun deleteUser(userId: Int)
-
-    // Query to get all note IDs related to a user
-    @Query("""
-        SELECT Note.noteId FROM User, Note, UserNoteRelation
-        WHERE User.userId = :userId
-        AND UserNoteRelation.userId = User.userId
-        AND Note.noteId = UserNoteRelation.noteId
-    """)
-    suspend fun getALLNoteIdsByUser(userId: Int): List<Int>
-
-    // Delete notes by their IDs
-    @Query("DELETE FROM note WHERE noteId IN (:notesIds)")
-    suspend fun deleteNotes(notesIds: List<Int>)
-
-    // Transaction to delete a user and all their notes
     @Transaction
-    suspend fun delete(userId: Int) {
-        deleteNotes(getALLNoteIdsByUser(userId))
-        deleteUser(userId)
+    suspend fun deleteUserAndNotes(userId: Int) {
+        // Ensure all notes associated with the user are deleted
+        deleteUserById(userId)
     }
 }
 
-// Database class with all entities and DAOs
-@Database(entities = [User::class, Note::class, UserNoteRelation::class], version = 1)
-// Database class with all entities and DAOs
+// The Room Database
+@Database(
+    entities = [User::class, Note::class, UserNoteRelation::class],
+    version = 1,
+    exportSchema = true
+)
 @TypeConverters(Converters::class)
 abstract class NoteDatabase : RoomDatabase() {
-    // Provide DAOs to access the database
+
     abstract fun userDao(): UserDao
     abstract fun noteDao(): NoteDao
     abstract fun deleteDao(): DeleteDao
 
     companion object {
-        // Singleton prevents multiple instances of database opening at the same time.
         @Volatile
         private var INSTANCE: NoteDatabase? = null
 
-        // Get or create the database instance
+        // Singleton for the Room database instance
         fun getDatabase(context: Context): NoteDatabase {
-            // If the INSTANCE is not null, then return it,
-            // if it is, then create the database
-            return INSTANCE ?: synchronized(lock = this) {
+            return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     NoteDatabase::class.java,
-                    context.getString(R.string.note_database) // Database name from resources
+                    "note_database" // Database name
                 ).build()
                 INSTANCE = instance
-                // Return instance
                 instance
             }
         }
