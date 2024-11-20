@@ -14,12 +14,14 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="1dp"
         android:hint="Event Title Name"
+        android:textColorHint="#78909C"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/editTextText4"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="VisualLintTextFieldSize" />
 
     <!-- Content EditText -->
 
@@ -30,27 +32,31 @@
         android:layout_width="362dp"
         android:layout_height="414dp"
         android:layout_margin="16dp"
+        android:autofillHints=""
         android:gravity="top"
-        android:hint="Description goes here"
+        android:hint="@string/description_goes_here"
         android:inputType="textMultiLine"
         android:scrollbars="vertical"
+        android:textColorHint="#78909C"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@id/saveButton"
-        app:layout_constraintHorizontal_bias="0.326"
+        app:layout_constraintHorizontal_bias="0.489"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/titleEditText"
-        app:layout_constraintVertical_bias="0.801" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/saveButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:autofillHints=""
         android:text="Save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        tools:ignore="VisualLintButtonSize" />
 
     <EditText
         android:id="@+id/editTextText4"
@@ -58,8 +64,9 @@
         android:layout_height="49dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="601dp"
+        android:autofillHints=""
         android:ems="10"
-        android:hint="Due Date"
+        android:hint="@string/due_date"
         android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -75,17 +82,19 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="15dp"
         android:ems="10"
-        android:hint="Urgency Level"
+        android:hint="@string/urgency_level"
         android:inputType="text"
         app:layout_constraintBottom_toTopOf="@+id/contentEditText"
         app:layout_constraintEnd_toStartOf="@+id/editTextText6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/spinner"
+        app:layout_constraintVertical_bias="1.0"
+        tools:ignore="VisualLintTextFieldSize" />
 
     <EditText
         android:id="@+id/editTextText6"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="178dp"
+        android:layout_height="60dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="540dp"
         android:ems="10"
@@ -94,7 +103,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/editTextText5"
-        app:layout_constraintTop_toBottomOf="@+id/spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/spinner"
+        tools:ignore="VisualLintTextFieldSize" />
 
     <Spinner
         android:id="@+id/spinner"
@@ -103,10 +113,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="6dp"
         android:layout_marginBottom="10dp"
+        android:entries="@array/spinner_items"
         app:layout_constraintBottom_toTopOf="@+id/editTextText6"
         app:layout_constraintEnd_toStartOf="@+id/editTextText4"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleEditText"
-        android:entries="@array/spinner_items"/>
+        app:layout_constraintTop_toBottomOf="@+id/titleEditText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

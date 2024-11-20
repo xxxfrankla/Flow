@@ -18,6 +18,9 @@
     <string name="logout">Log Out</string>
     <string name="delete_account">Delete Account</string>
     <string name="greeting_text">Welcome %1$s!</string>
+    <string name="description_goes_here">Description goes here</string>
+    <string name="due_date">Due Date</string>
+    <string name="urgency_level">Urgency Level</string>
     <string-array name="spinner_items">
         <item>Category: study</item>
         <item>Category: work</item>
