@@ -12,7 +12,7 @@
         android:id="@+id/monthTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="November"
+        android:text="@string/november"
         android:textSize="24sp"
         android:layout_gravity="center_horizontal"
         android:paddingBottom="16dp"
@@ -31,7 +31,7 @@
             android:layout_width="10dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Week 1"
+            android:text="@string/week_1"
             android:layout_marginEnd="4dp"/>
 
         <Button
@@ -39,7 +39,7 @@
             android:layout_width="10dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Week 2"
+            android:text="@string/week_2"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"/>
 
@@ -48,7 +48,7 @@
             android:layout_width="10dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Week 3"
+            android:text="@string/week_3"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"/>
 
@@ -57,7 +57,7 @@
             android:layout_width="10dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Week 4"
+            android:text="@string/week_4"
             android:layout_marginStart="4dp"/>
     </LinearLayout>
 

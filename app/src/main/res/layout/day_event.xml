@@ -11,7 +11,7 @@ android:padding="8dp">
     android:id="@+id/dayLabelTextView"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Mon"
+    android:text="@string/mon"
     android:layout_weight="1"/>
 
 
@@ -20,7 +20,7 @@ android:padding="8dp">
     android:id="@+id/eventDescriptionTextView"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:text="Team Meeting at 10 AM"
+    android:text="@string/team_meeting_at_10_am"
     android:layout_weight="3"/>
 
 </LinearLayout>

@@ -18,6 +18,28 @@
     <string name="logout">Log Out</string>
     <string name="delete_account">Delete Account</string>
     <string name="greeting_text">Welcome %1$s!</string>
+    <string name="task_title">Task Title</string>
+    <string name="task_description">Task Description</string>
+    <string name="no_plan">No Plan</string>
+    <string name="sun">Sun</string>
+    <string name="sat">Sat</string>
+    <string name="fri">Fri</string>
+    <string name="thu">Thu</string>
+    <string name="wed">Wed</string>
+    <string name="tue">Tue</string>
+    <string name="mon">Mon</string>
+    <string name="team_meeting_at_10_am">Team Meeting at 10 AM</string>
+    <string name="week_4">Week 4</string>
+    <string name="week_3">Week 3</string>
+    <string name="week_2">Week 2</string>
+    <string name="week_1">Week 1</string>
+    <string name="november">November</string>
+    <string name="completion_time_estimate">Completion Time Estimate</string>
+    <string name="urgency_level">Urgency Level</string>
+    <string name="due_date">Due Date</string>
+    <string name="save">Save</string>
+    <string name="description_goes_here">Description goes here</string>
+    <string name="event_title_name">Event Title Name</string>
     <string-array name="spinner_items">
         <item>Category: study</item>
         <item>Category: work</item>
