@@ -2,7 +2,17 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/initialPageFragment">
+
+    <fragment
+        android:id="@+id/initialPageFragment"
+        android:name="com.cs407.lab5_milestone.InitialPage"
+        android:label="Initial Page"
+        tools:layout="@layout/fragment_initial_page">
+        <action
+            android:id="@+id/action_initialPage_to_loginFragment"
+            app:destination="@id/loginFragment"/>
+    </fragment>
 
     <fragment
         android:id="@+id/loginFragment"
