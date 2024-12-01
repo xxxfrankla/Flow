@@ -29,13 +29,13 @@ import java.util.Date
     indices = [Index(value = ["userName"], unique = true
     )]
 )
-data class User(
+data class U1ser(
     @PrimaryKey(autoGenerate = true) val userId: Int = 0,
     val userName: String = ""
 )
 
 // Converter class to handle Date <-> Long type conversions
-class Converters {
+class Conver1ters {
     @TypeConverter
     fun fromTimestamp(value: Long): Date{
         return Date(value)
@@ -90,7 +90,7 @@ data class NoteSummary(
 //DAO for interacting with the User Entity
 // DAO (Data Access Object) for interacting with the User entity in the database
 @Dao
-interface UserDao {
+interface User1Dao {
 
     // Query to get a User by their userName
     @Query("SELECT * FROM user WHERE userName = :name")
@@ -179,7 +179,7 @@ interface NoteDao {
 
 // DAO for handling deletion of users and their related notes
 @Dao
-interface DeleteDao {
+interface Delete1Dao {
 
     // Delete a user by their userId
     @Query("DELETE FROM user WHERE userId = :userId")

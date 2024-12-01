@@ -20,10 +20,10 @@
         android:label="@string/login_screen"
         tools:layout="@layout/fragment_login">
         <action
-            android:id="@+id/action_loginFragment_to_noteListFragment"
-            app:destination="@id/noteListFragment"
-            app:popUpTo="@id/loginFragment"
-            app:popUpToInclusive="true"/>
+                android:id="@+id/action_loginFragment_to_noteListFragment"
+                app:destination="@id/todoListFragment"
+                app:popUpTo="@id/loginFragment"
+                app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -51,4 +51,19 @@
             app:argType="integer"
             android:defaultValue="0"/>
     </fragment>
+
+    <fragment
+            android:id="@+id/todoListFragment"
+            android:name="com.cs407.lab5_milestone.TodoListFragment"
+            android:label="TodoListFragment"
+            tools:layout="@layout/fragment_todo_list">
+    <action
+            android:id="@+id/action_todoListFragment_to_noteContentFragment"
+            app:destination="@id/noteContentFragment"/>
+    <action
+            android:id="@+id/action_todoListFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/todoListFragment"
+            app:popUpToInclusive="true"/>
+            </fragment>
 </navigation>

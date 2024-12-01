@@ -20,38 +20,36 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.cs407.lab5_milestone.data.Note
-import com.cs407.lab5_milestone.data.NoteDatabase
 import com.cs407.lab5_milestone.data.NoteSummary
+import com.cs407.lab5_milestone.data.TaskSummary
+import com.cs407.lab5_milestone.data.ToDoDatabase
+import com.cs407.lab5_milestone.data.TodoItem
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Calendar
 
-class NoteListFragment(
+class TodoListFragment(
     private val injectedUserViewModel: UserViewModel? = null
 ) : Fragment() {
 
     private lateinit var greetingTextView: TextView
-    private lateinit var noteRecyclerView: RecyclerView
+    private lateinit var todoRecyclerView: RecyclerView
     private lateinit var fab: FloatingActionButton
-
     private lateinit var userViewModel: UserViewModel
 
-    private lateinit var noteDB: NoteDatabase
+    private lateinit var adapter: TodoAdapter
+    private lateinit var todoDB: ToDoDatabase
     private lateinit var userPasswdKV: SharedPreferences
 
     private var deleteIt: Boolean = false
-    private lateinit var noteToDelete: NoteSummary
-
-    private lateinit var adapter: NoteAdapter
+    private lateinit var taskToDelete: TaskSummary
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        noteDB = NoteDatabase.getDatabase(requireContext())
+        todoDB = ToDoDatabase.getDatabase(requireContext())
         userPasswdKV = requireContext().getSharedPreferences(
             getString(R.string.userPasswdKV), Context.MODE_PRIVATE
         )
@@ -61,40 +59,22 @@ class NoteListFragment(
             // TODO - Use ViewModelProvider to init UserViewModel
             ViewModelProvider(requireActivity())[UserViewModel::class.java]
         }
-
-        // Manually create 1000 notes for "large" user
-        val userState = userViewModel.userState.value
-        lifecycleScope.launch {
-            val countNote = noteDB.noteDao().userNoteCount(userState.id)
-            if (countNote == 0 && userState.name == "large") {
-                for (i in 1..1000) {
-                    noteDB.noteDao().upsertNote(
-                        Note(
-                            noteTitle = "Note $i",
-                            noteAbstract = "This is Note $i",
-                            noteDetail = "Welcome to Note $i",
-                            notePath = null,
-                            lastEdited = Calendar.getInstance().time
-                        ), userState.id
-                    )
-                }
-            }
-        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        val view = inflater.inflate(R.layout.fragment_note_list, container, false)
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_todo_list, container, false)
         greetingTextView = view.findViewById(R.id.greetingTextView)
-        noteRecyclerView = view.findViewById(R.id.noteRecyclerView)
+        todoRecyclerView = view.findViewById(R.id.noteRecyclerView)
         fab = view.findViewById(R.id.fab)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
 
         val menuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
@@ -106,7 +86,7 @@ class NoteListFragment(
                 return when (menuItem.itemId) {
                     R.id.action_logout -> {
                         userViewModel.setUser(UserState())
-                        findNavController().navigate(R.id.action_noteListFragment_to_loginFragment)
+                        findNavController().navigate(R.id.action_todoListFragment_to_loginFragment)
                         true
                     }
 
@@ -123,50 +103,49 @@ class NoteListFragment(
         val userState = userViewModel.userState.value
         greetingTextView.text = getString(R.string.greeting_text, userState.name)
 
-        adapter = NoteAdapter(
-            onClick = { noteId ->
+        adapter = TodoAdapter(
+            onClick = { taskId ->
                 val action =
-                    NoteListFragmentDirections.actionNoteListFragmentToNoteContentFragment(noteId)
+                    TodoListFragmentDirections.actionTodoListFragmentToNoteContentFragment(taskId)
                 findNavController().navigate(action)
             },
-            onLongClick = { noteSummary ->
+            onLongClick = { taskSummary ->
                 deleteIt = true
-                noteToDelete = noteSummary
+                taskToDelete = taskSummary
                 showDeleteBottomSheet()
             }
         )
 
-        noteRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        noteRecyclerView.adapter = adapter
+        todoRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        todoRecyclerView.adapter = adapter
 
-        loadNotes()
+        loadTodos()
 
         fab.setOnClickListener {
-            val action = NoteListFragmentDirections.actionNoteListFragmentToNoteContentFragment(0)
+            val action = TodoListFragmentDirections.actionTodoListFragmentToNoteContentFragment(0)
             findNavController().navigate(action)
         }
     }
 
-    private fun loadNotes() {
-        // TODO: Retrieve the current user state from the ViewModel (to get the user ID)
-        val userState = userViewModel.userState.value
+    private fun loadTodos() {
 
-        // TODO: Set up paging configuration with a specified page size and prefetch distance
+        val userState = userViewModel.userState.value
+        // Set up paging configuration
         val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10)
 
-        // TODO: Implement a query to retrieve the paged list of notes associated with the user
+        // Create a Pager object
         val pager = Pager(
             config = pagingConfig,
-            pagingSourceFactory = {
-                noteDB.userDao().getUsersWithNoteListsByIdPaged(userState.id)
-            }).flow
-        // TODO: Launch a coroutine to collect the paginated flow and submit it to the RecyclerView adapter
+            pagingSourceFactory = { todoDB.userDao().getUsersWithTodoListsByIdPaged(userState.id) }
+        ).flow
+
+        // Launch a coroutine to collect the paginated flow and submit it to the RecyclerView adapter
         lifecycleScope.launch {
-            pager.collectLatest { pagingData -> adapter.submitData(pagingData) }
+            pager.collectLatest { pagingData ->
+                adapter.submitData(pagingData)
+            }
         }
     }
-    // TODO: Cache the paging flow in the lifecycle scope and collect the paginated data
-    // TODO: Submit the paginated data to the adapter to display it in the RecyclerView
 
 
     private fun showDeleteBottomSheet() {
@@ -179,21 +158,16 @@ class NoteListFragment(
             val cancelButton = bottomSheetView.findViewById<Button>(R.id.cancelButton)
             val deletePrompt = bottomSheetView.findViewById<TextView>(R.id.deletePrompt)
 
-            deletePrompt.text = "Delete Note: ${noteToDelete.noteTitle}"
+            deletePrompt.text = "Delete Task: ${taskToDelete.taskTitle}"
 
             deleteButton.setOnClickListener {
                 // TODO: Launch a coroutine to perform the note deletion in the background
                 lifecycleScope.launch{
-                    noteDB.deleteDao().deleteNotes(listOf(noteToDelete.noteId))
+                    todoDB.deleteDao().deleteTodos(listOf(taskToDelete.taskId))
                     deleteIt = false
                     bottomSheetDialog.dismiss()
-                    loadNotes()
+                    loadTodos()
                 }
-                // TODO: Implement the logic to delete the note from the Room database using the DAO
-
-                // TODO: Reset any flags or variables that control the delete state
-                // TODO: Dismiss the bottom sheet dialog after the deletion is completed
-                // TODO: Reload the list of notes to reflect the deleted note (e.g., refresh UI)
             }
 
             cancelButton.setOnClickListener {
@@ -214,7 +188,7 @@ class NoteListFragment(
         val userState = userViewModel.userState.value
         // TODO: Launch a coroutine to perform account deletion in the background
         lifecycleScope.launch(Dispatchers.IO){
-            val deleteDao = noteDB.deleteDao()
+            val deleteDao = todoDB.deleteDao()
             deleteDao.delete(userState.id)
 
             with(userPasswdKV.edit()){
@@ -225,7 +199,7 @@ class NoteListFragment(
 
             withContext(Dispatchers.Main) {
                 userViewModel.setUser(UserState())
-                findNavController().navigate(R.id.action_noteListFragment_to_loginFragment)
+                findNavController().navigate(R.id.action_todoListFragment_to_loginFragment)
             }
         }
         // TODO: Implement the logic to delete the user's data from the Room database
