@@ -15,7 +15,7 @@
 
     <!-- RecyclerView for notes -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/noteRecyclerView"
+        android:id="@+id/taskRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="60dp"

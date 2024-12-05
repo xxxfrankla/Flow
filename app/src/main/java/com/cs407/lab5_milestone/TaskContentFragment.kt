@@ -1,6 +1,5 @@
 package com.cs407.lab5_milestone
 
-import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
@@ -12,17 +11,15 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
-import com.cs407.lab5_milestone.data.Note
-import com.cs407.lab5_milestone.data.NoteDatabase
-import com.cs407.lab5_milestone.data.UserNoteRelation
+import com.cs407.lab5_milestone.data.Task
+import com.cs407.lab5_milestone.data.TaskDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.Calendar
-import java.util.Date
 
-class NoteContentFragment(
+class TaskContentFragment(
     private val injectedUserViewModel: UserViewModel? = null
 ) : Fragment() {
 
@@ -30,15 +27,15 @@ class NoteContentFragment(
     private lateinit var contentEditText: EditText
     private lateinit var saveButton: Button
 
-    private var noteId: Int = 0
-    private lateinit var noteDB: NoteDatabase
+    private var taskId: Int = 0
+    private lateinit var taskDB: TaskDatabase
     private lateinit var userViewModel: UserViewModel
     private var userId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        noteId = arguments?.getInt("noteId") ?: 0
-        noteDB = NoteDatabase.getDatabase(requireContext())
+        taskId = arguments?.getInt("taskId") ?: 0
+        taskDB = TaskDatabase.getDatabase(requireContext())
         userViewModel = if (injectedUserViewModel != null) {
             injectedUserViewModel
         } else {
@@ -52,7 +49,7 @@ class NoteContentFragment(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.fragment_note_content, container, false)
+        val view = inflater.inflate(R.layout.fragment_task_content, container, false)
         titleEditText = view.findViewById(R.id.titleEditText)
         contentEditText = view.findViewById(R.id.contentEditText)
         saveButton = view.findViewById(R.id.saveButton)
@@ -65,21 +62,21 @@ class NoteContentFragment(
         setupMenu()
         setupBackNavigation()
 
-        if (noteId != 0) {
+        if (taskId != 0) {
             // TODO: Launch a coroutine to fetch the note from the database in the background
             lifecycleScope.launch{
-                val note = noteDB.noteDao().getById(noteId)
-                var content: String? = note?.noteDetail
+                val task = taskDB.taskDao().getById(taskId)
+                var content: String? = task?.taskDetail
                 withContext(Dispatchers.IO){
-                    if(note.notePath!= null){
-                        val file = File(context?.filesDir, note.notePath)
+                    if(task.taskPath!= null){
+                        val file = File(context?.filesDir, task.taskPath)
                         content = file.readText()
                     }
                 }
 
                 withContext(Dispatchers.Main){
-                    if(note != null) {
-                        titleEditText.setText(note.noteTitle)
+                    if(task != null) {
+                        titleEditText.setText(task.taskTitle)
                         contentEditText.setText(content)
                     }
                 }
@@ -103,7 +100,7 @@ class NoteContentFragment(
             saveContent()
         }
     }
-    private fun readNoteContentFromFile(filePath: String): String {
+    private fun readTaskContentFromFile(filePath: String): String {
         val file = File(filePath)
         return file.readText()
     }
@@ -153,21 +150,21 @@ class NoteContentFragment(
 
         lifecycleScope.launch(Dispatchers.IO) {
 
-            val notePath: String? = if(content.length > 1024){
-                saveNoteContentToFile(userId, content)
+            val taskPath: String? = if(content.length > 1024){
+                saveTaskContentToFile(userId, content)
             }else{
                 null
             }
-            val noteAbstract = splitAbstractDetail(content)
-            val note = Note(
-                noteId = if(noteId== 0) 0 else noteId,
-                noteTitle = title,
-                noteAbstract = noteAbstract,
-                noteDetail = if (notePath == null) content else null,
-                notePath = notePath,
+            val taskAbstract = splitAbstractDetail(content)
+            val task = Task(
+                taskId = if(taskId== 0) 0 else taskId,
+                taskTitle = title,
+                taskAbstract = taskAbstract,
+                taskDetail = if (taskPath == null) content else null,
+                taskPath = taskPath,
                 lastEdited = Calendar.getInstance().time
             )
-            noteDB.noteDao().upsertNote(note, userId)
+            taskDB.taskDao().upsertTask(task, userId)
 
             withContext(Dispatchers.Main){
                 if(isAdded && view != null){
@@ -189,9 +186,9 @@ class NoteContentFragment(
         // TODO: Switch back to the main thread to navigate the UI after saving
         // TODO: Navigate back to the previous screen (e.g., after saving the note)
 
-    private fun saveNoteContentToFile(userId: Int, content: String): String {
+    private fun saveTaskContentToFile(userId: Int, content: String): String {
         val timestamp = Calendar.getInstance().time.time
-        val fileName = "note-$userId-$noteId-$timestamp.txt"
+        val fileName = "task-$userId-$taskId-$timestamp.txt"
         val fileDir = requireContext().filesDir
         val file = File(fileDir, fileName)
         file.writeText(content)

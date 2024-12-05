@@ -5,7 +5,6 @@ import androidx.paging.PagingSource
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
-import androidx.room.Delete
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -17,7 +16,6 @@ import androidx.room.RoomDatabase
 import androidx.room.Transaction
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import androidx.room.Update
 import androidx.room.Upsert
 import com.cs407.lab5_milestone.R
 import java.util.Date
@@ -49,41 +47,41 @@ class Converters {
 
 //Note Entity
 @Entity
-data class Note(
-    @PrimaryKey(autoGenerate = true) val noteId: Int = 0, //auto-generated primary key for Note
-    val noteTitle: String, //Title of the note
-    val noteAbstract: String, // Short summary of the note
+data class Task(
+    @PrimaryKey(autoGenerate = true) val taskId: Int = 0, //auto-generated primary key for Task
+    val taskTitle: String, //Title of the task
+    val taskAbstract: String, // Short summary of the task
     //Detailed content of the note (optional, might be null)
-    @ColumnInfo(typeAffinity = ColumnInfo.TEXT) val noteDetail: String?,
-    val notePath: String?,
+    @ColumnInfo(typeAffinity = ColumnInfo.TEXT) val taskDetail: String?,
+    val taskPath: String?,
     val lastEdited: Date
 )
 
 //UserNoteRelation
 @Entity(
-    primaryKeys = ["userId", "noteId"],
+    primaryKeys = ["userId", "taskId"],
     foreignKeys = [ForeignKey(
         entity = User::class,
         parentColumns = ["userId"],
         childColumns = ["userId"],
         onDelete = ForeignKey.CASCADE
     ), ForeignKey(
-        entity = Note::class,
-        parentColumns = ["noteId"],
-        childColumns = ["noteId"],
+        entity = Task::class,
+        parentColumns = ["taskId"],
+        childColumns = ["taskId"],
         onDelete = ForeignKey.CASCADE
     )]
 )
-data class UserNoteRelation(
+data class UserTaskRelation(
     val userId: Int,
-    val noteId: Int
+    val taskId: Int
 )
 //Summary projection of the Note entity
 // A summary projection of the Note entity, for displaying limited fields in queries
-data class NoteSummary(
-    val noteId: Int,
-    val noteTitle: String,
-    val noteAbstract: String,
+data class TaskSummary(
+    val taskId: Int,
+    val taskTitle: String,
+    val taskAbstract: String,
     val lastEdited: Date
 )
 
@@ -101,68 +99,74 @@ interface UserDao {
     suspend fun getById(id: Int): User
 
     // Query to get a list of NoteSummary for a user, ordered by lastEdited
-    @Query("""
-        SELECT * FROM User, Note, UserNoteRelation
+    @Query(
+        """
+        SELECT * FROM User, Task, UserTaskRelation
         WHERE User.userId = :id
-        AND UserNoteRelation.userId = User.userId
-        AND Note.noteId = UserNoteRelation.noteId
-        ORDER BY Note.lastEdited DESC
-    """)
-    suspend fun getUsersWithNoteListsById(id: Int): List<NoteSummary>
+        AND UserTaskRelation.userId = User.userId
+        AND Task.taskId = UserTaskRelation.taskId
+        ORDER BY Task.lastEdited DESC
+    """
+    )
+    suspend fun getUsersWithTaskListsById(id: Int): List<TaskSummary>
 
     // Same query but returns a PagingSource for pagination
-    @Query("""
-        SELECT * FROM User, Note, UserNoteRelation
+    @Query(
+        """
+        SELECT * FROM User, Task, UserTaskRelation
         WHERE User.userId = :id
-        AND UserNoteRelation.userId = User.userId
-        AND Note.noteId = UserNoteRelation.noteId
-        ORDER BY Note.lastEdited DESC
-    """)
-    fun getUsersWithNoteListsByIdPaged(id: Int): PagingSource<Int, NoteSummary>
+        AND UserTaskRelation.userId = User.userId
+        AND Task.taskId = UserTaskRelation.taskId
+        ORDER BY Task.lastEdited DESC
+    """
+    )
+    fun getUsersWithTaskListsByIdPaged(id: Int): PagingSource<Int, TaskSummary>
 
     // Insert a new user into the database
     @Insert(entity = User::class)
     suspend fun insert(user: User)
 }
 
-// DAO for interacting with the Note entity
+// DAO for interacting with the Task entity
 @Dao
-interface NoteDao {
+interface TaskDao {
 
-    // Query to get a Note by its noteId
-    @Query("SELECT * FROM note WHERE noteId = :id")
-    suspend fun getById(id: Int): Note
+    // Query to get a task by its taskId
+    @Query("SELECT * FROM task WHERE taskId = :id")
+    suspend fun getById(id: Int): Task
 
-    // Query to get a Note's ID by its rowId (SQLite internal ID)
-    @Query("SELECT noteId FROM note WHERE rowid = :rowId")
+    // Query to get a task's ID by its rowId (SQLite internal ID)
+    @Query("SELECT taskId FROM task WHERE rowid = :rowId")
     suspend fun getByRowId(rowId: Long): Int
 
-    // Insert or update a Note (upsert operation)
-    @Upsert(entity = Note::class)
-    suspend fun upsert(note: Note): Long
+    // Insert or update a task (upsert operation)
+    @Upsert(entity = Task::class)
+    suspend fun upsert(task: Task): Long
 
     // Insert a relation between a user and a note
     @Insert
-    suspend fun insertRelation(userAndNote: UserNoteRelation)
+    suspend fun insertRelation(userAndTask: UserTaskRelation)
 
-    // Insert or update a Note and create a relation to the User if it's a new Note
+    // Insert or update a Task and create a relation to the User if it's a new Task
     @Transaction
-    suspend fun upsertNote(note: Note, userId: Int) {
-        val rowId = upsert(note)
-        if (note.noteId == 0) { // New note
-            val noteId = getByRowId(rowId)
-            insertRelation(UserNoteRelation(userId, noteId))
+    suspend fun upsertTask(task: Task, userId: Int) {
+        val rowId = upsert(task)
+        if (task.taskId == 0) { // New note
+            val taskId = getByRowId(rowId)
+            insertRelation(UserTaskRelation(userId, taskId))
         }
     }
 
     // Query to count the number of notes a user has
-    @Query("""
-        SELECT COUNT(*) FROM User, Note, UserNoteRelation
+    @Query(
+        """
+        SELECT COUNT(*) FROM User, Task, UserTaskRelation
         WHERE User.userId = :userId
-        AND UserNoteRelation.userId = User.userId
-        AND Note.noteId = UserNoteRelation.noteId
-    """)
-    suspend fun userNoteCount(userId: Int): Int
+        AND UserTaskRelation.userId = User.userId
+        AND Task.taskId = UserTaskRelation.taskId
+    """
+    )
+    suspend fun userTaskCount(userId: Int): Int
 
 //    @Query("""
 //        SELECT Note.noteId, Note.noteTitle, Note.noteAbstract, Note.lastEdited
@@ -186,50 +190,52 @@ interface DeleteDao {
     suspend fun deleteUser(userId: Int)
 
     // Query to get all note IDs related to a user
-    @Query("""
-        SELECT Note.noteId FROM User, Note, UserNoteRelation
+    @Query(
+        """
+        SELECT Task.taskId FROM User, Task, UserTaskRelation
         WHERE User.userId = :userId
-        AND UserNoteRelation.userId = User.userId
-        AND Note.noteId = UserNoteRelation.noteId
-    """)
-    suspend fun getALLNoteIdsByUser(userId: Int): List<Int>
+        AND UserTaskRelation.userId = User.userId
+        AND Task.taskId = UserTaskRelation.taskId
+    """
+    )
+    suspend fun getALLTaskIdsByUser(userId: Int): List<Int>
 
     // Delete notes by their IDs
-    @Query("DELETE FROM note WHERE noteId IN (:notesIds)")
-    suspend fun deleteNotes(notesIds: List<Int>)
+    @Query("DELETE FROM task WHERE taskId IN (:tasksIds)")
+    suspend fun deleteTasks(tasksIds: List<Int>)
 
     // Transaction to delete a user and all their notes
     @Transaction
     suspend fun delete(userId: Int) {
-        deleteNotes(getALLNoteIdsByUser(userId))
+        deleteTasks(getALLTaskIdsByUser(userId))
         deleteUser(userId)
     }
 }
 
 // Database class with all entities and DAOs
-@Database(entities = [User::class, Note::class, UserNoteRelation::class], version = 1)
+@Database(entities = [User::class, Task::class, UserTaskRelation::class], version = 1)
 // Database class with all entities and DAOs
 @TypeConverters(Converters::class)
-abstract class NoteDatabase : RoomDatabase() {
+abstract class TaskDatabase : RoomDatabase() {
     // Provide DAOs to access the database
     abstract fun userDao(): UserDao
-    abstract fun noteDao(): NoteDao
+    abstract fun taskDao(): TaskDao
     abstract fun deleteDao(): DeleteDao
 
     companion object {
         // Singleton prevents multiple instances of database opening at the same time.
         @Volatile
-        private var INSTANCE: NoteDatabase? = null
+        private var INSTANCE: TaskDatabase? = null
 
         // Get or create the database instance
-        fun getDatabase(context: Context): NoteDatabase {
+        fun getDatabase(context: Context): TaskDatabase {
             // If the INSTANCE is not null, then return it,
             // if it is, then create the database
             return INSTANCE ?: synchronized(lock = this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    NoteDatabase::class.java,
-                    context.getString(R.string.note_database) // Database name from resources
+                    TaskDatabase::class.java,
+                    context.getString(R.string.task_database) // Database name from resources
                 ).build()
                 INSTANCE = instance
                 // Return instance

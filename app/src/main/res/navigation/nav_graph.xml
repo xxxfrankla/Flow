@@ -20,34 +20,34 @@
         android:label="@string/login_screen"
         tools:layout="@layout/fragment_login">
         <action
-            android:id="@+id/action_loginFragment_to_noteListFragment"
-            app:destination="@id/noteListFragment"
+            android:id="@+id/action_loginFragment_to_taskListFragment"
+            app:destination="@id/taskListFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true"/>
     </fragment>
 
     <fragment
-        android:id="@+id/noteListFragment"
-        android:name="com.cs407.lab5_milestone.NoteListFragment"
-        android:label="@string/note_list_screen"
-        tools:layout="@layout/fragment_note_list">
+        android:id="@+id/taskListFragment"
+        android:name="com.cs407.lab5_milestone.TaskListFragment"
+        android:label="@string/task_list_screen"
+        tools:layout="@layout/fragment_task_list">
         <action
-            android:id="@+id/action_noteListFragment_to_noteContentFragment"
-            app:destination="@id/noteContentFragment"/>
+            android:id="@+id/action_taskListFragment_to_taskContentFragment"
+            app:destination="@id/taskContentFragment"/>
         <action
-            android:id="@+id/action_noteListFragment_to_loginFragment"
+            android:id="@+id/action_taskListFragment_to_loginFragment"
             app:destination="@id/loginFragment"
-            app:popUpTo="@id/noteListFragment"
+            app:popUpTo="@id/taskListFragment"
             app:popUpToInclusive="true"/>
     </fragment>
 
     <fragment
-        android:id="@+id/noteContentFragment"
-        android:name="com.cs407.lab5_milestone.NoteContentFragment"
-        android:label="@string/note_content_screen"
-        tools:layout="@layout/fragment_note_content">
+        android:id="@+id/taskContentFragment"
+        android:name="com.cs407.lab5_milestone.TaskContentFragment"
+        android:label="@string/task_content_screen"
+        tools:layout="@layout/fragment_task_content">
         <argument
-            android:name="noteId"
+            android:name="taskId"
             app:argType="integer"
             android:defaultValue="0"/>
     </fragment>

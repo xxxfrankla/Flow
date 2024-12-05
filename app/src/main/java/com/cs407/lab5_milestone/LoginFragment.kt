@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.cs407.lab5_milestone.data.NoteDatabase
+import com.cs407.lab5_milestone.data.TaskDatabase
 import com.cs407.lab5_milestone.data.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,7 +31,7 @@ class LoginFragment(
     private lateinit var userViewModel: UserViewModel
 
     private lateinit var userPasswdKV: SharedPreferences
-    private lateinit var noteDB: NoteDatabase
+    private lateinit var taskDB: TaskDatabase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,7 +52,7 @@ class LoginFragment(
 
         // TODO - Get shared preferences from using R.string.userPasswdKV as the name
         userPasswdKV = requireContext().getSharedPreferences(getString(R.string.userPasswdKV), Context.MODE_PRIVATE)
-        noteDB = NoteDatabase.getDatabase(requireContext())
+        taskDB = TaskDatabase.getDatabase(requireContext())
         return view
     }
 
@@ -75,9 +75,9 @@ class LoginFragment(
                 viewLifecycleOwner.lifecycleScope.launch {
                     val ins = withContext(Dispatchers.IO) {getUserPasswd(username, password)}
                     if (ins) {
-                        val userId = withContext(Dispatchers.IO){noteDB.userDao().getByName(username).userId}
+                        val userId = withContext(Dispatchers.IO){taskDB.userDao().getByName(username).userId}
                         userViewModel.setUser(UserState(userId, username, password))
-                        findNavController().navigate(R.id.action_loginFragment_to_noteListFragment)
+                        findNavController().navigate(R.id.action_loginFragment_to_taskListFragment)
                     } else {
                         errorTextView.visibility = View.VISIBLE
                     }
@@ -100,7 +100,7 @@ class LoginFragment(
             }
         }else {
             withContext(Dispatchers.IO) {
-                noteDB.userDao().insert(User(userName = name))
+                taskDB.userDao().insert(User(userName = name))
             }
             with(userPasswdKV.edit()) {
                 putString(name, hashedPassword)

@@ -16,7 +16,7 @@
 
         <TextView
             android:id="@+id/titleTextView"
-            android:text="Note Title"
+            android:text="Task Title"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_width="match_parent"
@@ -36,7 +36,7 @@
             <TextView
                 android:layout_marginStart="10dp"
                 android:id="@+id/abstractTextView"
-                android:text="Note abstract"
+                android:text="Task abstract"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"/>
