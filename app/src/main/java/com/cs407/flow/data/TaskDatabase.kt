@@ -1,4 +1,4 @@
-package com.cs407.lab5_milestone.data
+package com.cs407.flow.data
 
 import android.content.Context
 import androidx.paging.PagingSource
@@ -19,7 +19,7 @@ import androidx.room.TypeConverters
 import androidx.room.Upsert
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.cs407.lab5_milestone.R
+import com.cs407.flow.R
 import java.util.Date
 
 // Define your own @Entity, @Dao and @Database

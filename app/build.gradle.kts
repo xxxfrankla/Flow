@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.cs407.lab5_milestone"
+    namespace = "com.cs407.flow"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.cs407.lab5_milestone"
+        applicationId = "com.cs407.flow"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

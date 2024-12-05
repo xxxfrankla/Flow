@@ -1,4 +1,4 @@
-package com.cs407.lab5_milestone
+package com.cs407.flow
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.cs407.lab5_milestone.data.TaskSummary
+import com.cs407.flow.data.TaskSummary
 import java.text.SimpleDateFormat
 import java.util.*
 

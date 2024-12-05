@@ -1,4 +1,4 @@
-package com.cs407.lab5_milestone
+package com.cs407.flow
 
 import android.os.Bundle
 import android.view.*
@@ -11,8 +11,8 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
-import com.cs407.lab5_milestone.data.Task
-import com.cs407.lab5_milestone.data.TaskDatabase
+import com.cs407.flow.data.Task
+import com.cs407.flow.data.TaskDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

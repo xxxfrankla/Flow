@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/initialPageFragment"
-        android:name="com.cs407.lab5_milestone.InitialPage"
+        android:name="com.cs407.flow.InitialPage"
         android:label="Initial Page"
         tools:layout="@layout/fragment_initial_page">
         <action
@@ -16,7 +16,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.cs407.lab5_milestone.LoginFragment"
+        android:name="com.cs407.flow.LoginFragment"
         android:label="@string/login_screen"
         tools:layout="@layout/fragment_login">
         <action
@@ -28,7 +28,7 @@
 
     <fragment
         android:id="@+id/taskListFragment"
-        android:name="com.cs407.lab5_milestone.TaskListFragment"
+        android:name="com.cs407.flow.TaskListFragment"
         android:label="@string/task_list_screen"
         tools:layout="@layout/fragment_task_list">
         <action
@@ -43,7 +43,7 @@
 
     <fragment
         android:id="@+id/taskContentFragment"
-        android:name="com.cs407.lab5_milestone.TaskContentFragment"
+        android:name="com.cs407.flow.TaskContentFragment"
         android:label="@string/task_content_screen"
         tools:layout="@layout/fragment_task_content">
         <argument

@@ -1,4 +1,4 @@
-package com.cs407.lab5_milestone
+package com.cs407.flow
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

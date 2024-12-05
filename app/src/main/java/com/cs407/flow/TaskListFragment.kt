@@ -1,4 +1,4 @@
-package com.cs407.lab5_milestone
+package com.cs407.flow
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -20,9 +20,9 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.cs407.lab5_milestone.data.Task
-import com.cs407.lab5_milestone.data.TaskDatabase
-import com.cs407.lab5_milestone.data.TaskSummary
+import com.cs407.flow.data.Task
+import com.cs407.flow.data.TaskDatabase
+import com.cs407.flow.data.TaskSummary
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers

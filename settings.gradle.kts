@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "lab5-milestone"
+rootProject.name = "flow"
 include(":app")
  

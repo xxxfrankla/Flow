@@ -1,4 +1,4 @@
-package com.cs407.lab5_milestone
+package com.cs407.flow
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -12,9 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.cs407.lab5_milestone.data.TaskDatabase
-import com.cs407.lab5_milestone.data.User
-import com.cs407.lab5_milestone.data.resetDatabase
+import com.cs407.flow.data.TaskDatabase
+import com.cs407.flow.data.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
