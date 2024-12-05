@@ -76,6 +76,7 @@ class TaskListFragment(
                             taskPath = null,
                             lastEdited = Calendar.getInstance().time,
                             priority = 0,
+                            dueDate = Calendar.getInstance().time,
                             estimatedTime = 0
                         ), userState.id
                     )
@@ -184,7 +185,6 @@ class TaskListFragment(
             deletePrompt.text = "Delete Task: ${taskToDelete.taskTitle}"
 
             deleteButton.setOnClickListener {
-                // TODO: Launch a coroutine to perform the note deletion in the background
                 lifecycleScope.launch{
                     taskDB.deleteDao().deleteTasks(listOf(taskToDelete.taskId))
                     deleteIt = false

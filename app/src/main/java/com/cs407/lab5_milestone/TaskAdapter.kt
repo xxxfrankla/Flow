@@ -18,7 +18,7 @@ class TaskAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val itemView =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_note, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
         return TaskViewHolder(itemView, onClick, onLongClick)
     }
 
@@ -36,13 +36,15 @@ class TaskAdapter(
     ) : RecyclerView.ViewHolder(itemView) {
         private val taskTitle: TextView = itemView.findViewById(R.id.titleTextView)
         private val taskAbstract: TextView = itemView.findViewById(R.id.abstractTextView)
-        private val taskDate: TextView = itemView.findViewById(R.id.dateTextView)
+        private val dueDate: TextView = itemView.findViewById(R.id.dueDateTextView)
+        private val priority: TextView = itemView.findViewById(R.id.priorityTextView)
 
         fun bind(taskSummary: TaskSummary) {
             taskTitle.text = taskSummary.taskTitle
             taskAbstract.text = taskSummary.taskAbstract
             val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-            taskDate.text = dateFormatter.format(taskSummary.lastEdited)
+            dueDate.text = taskSummary.dueDate?.let { dateFormatter.format(it) }
+            priority.text = taskSummary.priority.toString()
 
             itemView.setOnClickListener {
                 onClick(taskSummary.taskId)

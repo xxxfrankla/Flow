@@ -58,7 +58,8 @@ data class Task(
     val taskPath: String?,
     val lastEdited: Date,
     val priority: Int,
-    val estimatedTime: Int?
+    val dueDate: Date?,
+    val estimatedTime: Int
 )
 
 //UserNoteRelation
@@ -86,7 +87,10 @@ data class TaskSummary(
     val taskId: Int,
     val taskTitle: String,
     val taskAbstract: String,
-    val lastEdited: Date
+    val lastEdited: Date,
+    val dueDate: Date?,
+    val priority: Int
+
 )
 
 //DAO for interacting with the User Entity
@@ -172,6 +176,22 @@ interface TaskDao {
     )
     suspend fun userTaskCount(userId: Int): Int
 
+    @Query("SELECT * FROM Task ORDER BY dueDate ASC")
+    suspend fun getTasksOrderedByDueDate(): List<Task>
+
+    @Query("SELECT * FROM Task WHERE dueDate < :currentDate")
+    suspend fun getOverdueTasks(currentDate: Long): List<Task>
+
+    @Query("SELECT * FROM Task WHERE dueDate BETWEEN :startDate AND :endDate")
+    suspend fun getTasksInRange(startDate: Long, endDate: Long): List<Task>
+
+    @Query("SELECT * FROM Task WHERE priority >= :minPriority ORDER BY priority DESC")
+    suspend fun getHighPriorityTasks(minPriority: Int): List<Task>
+
+    @Query("SELECT * FROM Task WHERE estimatedTime <= :maxTime ORDER BY estimatedTime ASC")
+    suspend fun getTasksWithEstimatedTime(maxTime: Int): List<Task>
+
+
 //    @Query("""
 //        SELECT Note.noteId, Note.noteTitle, Note.noteAbstract, Note.lastEdited
 //        FROM Note
@@ -254,6 +274,7 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL("ALTER TABLE Task ADD COLUMN priority INTEGER NOT NULL DEFAULT 0")
         database.execSQL("ALTER TABLE Task ADD COLUMN estimatedTime INTEGER")
+        database.execSQL("ALTER TABLE Task ADD COLUMN dueDate INTEGER")
     }
 }
 

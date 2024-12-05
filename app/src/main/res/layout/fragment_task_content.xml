@@ -5,83 +5,74 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <!-- Title EditText -->
-    <EditText
-            android:id="@+id/titleEditText"
+    <ScrollView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:hint="Task"
-            android:textStyle="bold"
+            android:layout_height="0dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_margin="16dp" />
+            app:layout_constraintBottom_toTopOf="@id/saveButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Content EditText -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+            <!-- Title EditText -->
+            <EditText
+                    android:id="@+id/titleEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="30sp"
+                    android:hint="Task"
+                    android:textStyle="bold" />
+
+            <!-- Start Date EditText -->
+            <EditText
+                    android:id="@+id/dueDateEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="DueDate (YYYY-MM-DD)" />
+
+            <!-- Estimated Time EditText -->
+            <EditText
+                    android:id="@+id/estimatedTimeEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Estimated Time (hours)"
+                    android:inputType="number" />
+
+            <!-- Priority EditText -->
+            <EditText
+                    android:id="@+id/priorityEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Priority (0-10)"
+                    android:inputType="number" />
+
+            <!-- Content EditText -->
+            <EditText
+                    android:id="@+id/contentEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Write here..."
+                    android:textSize="20sp"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:scrollbars="vertical" />
+        </LinearLayout>
+    </ScrollView>
 
     <!-- Save Button -->
-
-    <EditText
-            android:id="@+id/contentEditText"
-            android:layout_width="379dp"
-            android:layout_height="476dp"
-            android:hint="Write here..."
-            android:textSize="20sp"
-            app:layout_constraintTop_toBottomOf="@+id/priorityEditText"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_margin="16dp"
-            android:gravity="top"
-            android:inputType="textMultiLine"
-            android:scrollbars="vertical"
-            app:layout_constraintHorizontal_bias="0.875"
-            app:layout_constraintVertical_bias="0.479"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="225dp" />
-
     <Button
             android:id="@+id/saveButton"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_margin="16dp" />
-
-    <EditText
-            android:id="@+id/priorityEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="Priority (0-10)"
-            android:inputType="number"
-            app:layout_constraintStart_toStartOf="@+id/estimatedTimeEditText"
-            app:layout_constraintTop_toBottomOf="@+id/estimatedTimeEditText"
-            android:layout_marginBottom="15dp"
-            app:layout_constraintBottom_toTopOf="@+id/contentEditText" />
-
-    <EditText
-            android:id="@+id/startDateEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="Start Date (YYYY-MM-DD)"
-            app:layout_constraintTop_toBottomOf="@id/titleEditText"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="16dp" />
-
-    <EditText
-            android:id="@+id/estimatedTimeEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="Estimated Time (hours)"
-            android:inputType="number"
-            android:layout_marginTop="122dp"
-            app:layout_constraintEnd_toEndOf="@+id/startDateEditText"
-            app:layout_constraintBottom_toTopOf="@+id/priorityEditText"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="17dp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

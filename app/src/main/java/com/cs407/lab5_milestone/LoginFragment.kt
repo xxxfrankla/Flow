@@ -50,7 +50,6 @@ class LoginFragment(
             ViewModelProvider(requireActivity())[UserViewModel::class.java]
         }
 
-        // TODO - Get shared preferences from using R.string.userPasswdKV as the name
         userPasswdKV = requireContext().getSharedPreferences(getString(R.string.userPasswdKV), Context.MODE_PRIVATE)
         taskDB = TaskDatabase.getDatabase(requireContext())
         return view
@@ -66,7 +65,6 @@ class LoginFragment(
         }
         // Set the login button click action
         loginButton.setOnClickListener {
-            // TODO: Get the entered username and password from EditText fields
             val username = usernameEditText.text.toString()
             val password = passwordEditText.text.toString()
             if (username.isEmpty() || password.isEmpty()) {
@@ -91,7 +89,6 @@ class LoginFragment(
         name: String,
         passwdPlain: String
     ): Boolean {
-        // TODO: Hash the plain password using a secure hashing function
         val hashedPassword = hash(passwdPlain)
         if (userPasswdKV.contains(name)) {
             val passwordInKV = userPasswdKV.getString(name, null)
@@ -109,17 +106,6 @@ class LoginFragment(
         }
         return true
     }
-        // TODO: Retrieve the stored password from SharedPreferences
-
-        // TODO: Compare the hashed password with the stored one and return false if they don't match
-
-        // TODO: If the user doesn't exist in SharedPreferences, create a new user
-
-        // TODO: Insert the new user into the Room database (implement this in your User DAO)
-
-        // TODO: Store the hashed password in SharedPreferences for future logins
-
-        // TODO: Return true if the user login is successful or the user was newly created
 
     private fun hash(input: String): String {
         return MessageDigest.getInstance("SHA-256").digest(input.toByteArray())

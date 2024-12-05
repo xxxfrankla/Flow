@@ -18,6 +18,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class TaskContentFragment(
     private val injectedUserViewModel: UserViewModel? = null
@@ -26,6 +28,9 @@ class TaskContentFragment(
     private lateinit var titleEditText: EditText
     private lateinit var contentEditText: EditText
     private lateinit var saveButton: Button
+    private lateinit var priorityEditText: EditText
+    private lateinit var estimatedTimeEditText: EditText
+    private lateinit var dueDateEditText: EditText
 
     private var taskId: Int = 0
     private lateinit var taskDB: TaskDatabase
@@ -53,6 +58,9 @@ class TaskContentFragment(
         titleEditText = view.findViewById(R.id.titleEditText)
         contentEditText = view.findViewById(R.id.contentEditText)
         saveButton = view.findViewById(R.id.saveButton)
+        priorityEditText = view.findViewById(R.id.priorityEditText)
+        estimatedTimeEditText = view.findViewById(R.id.estimatedTimeEditText)
+        dueDateEditText = view.findViewById(R.id.dueDateEditText)
         return view
     }
 
@@ -64,36 +72,29 @@ class TaskContentFragment(
 
         if (taskId != 0) {
             // TODO: Launch a coroutine to fetch the note from the database in the background
-            lifecycleScope.launch{
+            lifecycleScope.launch {
                 val task = taskDB.taskDao().getById(taskId)
                 var content: String? = task?.taskDetail
-                withContext(Dispatchers.IO){
-                    if(task.taskPath!= null){
+                withContext(Dispatchers.IO) {
+                    if (task.taskPath != null) {
                         val file = File(context?.filesDir, task.taskPath)
                         content = file.readText()
                     }
                 }
 
-                withContext(Dispatchers.Main){
-                    if(task != null) {
+                withContext(Dispatchers.Main) {
+                    if (task != null) {
                         titleEditText.setText(task.taskTitle)
                         contentEditText.setText(content)
+                        priorityEditText.setText(task.priority.toString())
+                        estimatedTimeEditText.setText(task.estimatedTime?.toString())
+                        dueDateEditText.setText(task.dueDate?.let { date ->
+                            java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                .format(date)
+                        })
                     }
                 }
             }
-            // TODO: Retrieve the note from the Room database using the noteId
-
-            // TODO: Check if the note content is stored in the database or in a file
-
-            // TODO: If the content is too large and stored as a file, read the file content
-
-            // TODO: Switch back to the main thread to update the UI with the note content
-
-            // TODO: Set the retrieved note title to the title EditText field
-
-            // TODO: Set the note content (either from the file or the database) to the content EditText field
-
-            // TODO: Optionally handle exceptions (e.g., file not found, database errors) if necessary
         }
 
         saveButton.setOnClickListener {
@@ -144,50 +145,74 @@ class TaskContentFragment(
     }
 
     private fun saveContent() {
-        // Retrieve the title and content from EditText fields
         val title = titleEditText.text.toString()
         val content = contentEditText.text.toString()
-        //val priority =
+        val priority = priorityEditText.text.toString().toIntOrNull() ?: 0
+        val estimatedTime = estimatedTimeEditText.text.toString().toIntOrNull() ?: 0
+        val dueDate = parseDueDate()
+
+        if (!validateInputs()) return
 
         lifecycleScope.launch(Dispatchers.IO) {
-
-            val taskPath: String? = if(content.length > 1024){
-                saveTaskContentToFile(userId, content)
-            }else{
-                null
-            }
+            val taskPath = if (content.length > 1024) saveTaskContentToFile(userId, content) else null
             val taskAbstract = splitAbstractDetail(content)
+
             val task = Task(
-                taskId = if(taskId== 0) 0 else taskId,
+                taskId = if (taskId == 0) 0 else taskId,
                 taskTitle = title,
                 taskAbstract = taskAbstract,
                 taskDetail = if (taskPath == null) content else null,
                 taskPath = taskPath,
                 lastEdited = Calendar.getInstance().time,
-                priority = 0,
-                estimatedTime = 0
+                priority = priority,
+                estimatedTime = estimatedTime,
+                dueDate = dueDate
             )
             taskDB.taskDao().upsertTask(task, userId)
 
-            withContext(Dispatchers.Main){
-                if(isAdded && view != null){
+            withContext(Dispatchers.Main) {
+                if (isAdded && view != null) {
                     findNavController().popBackStack()
                 }
             }
         }
     }
 
+    private fun parseDueDate(): Date? {
+        return try {
+            if (dueDateEditText.text.isNotBlank()) {
+                java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    .parse(dueDateEditText.text.toString())
+            } else null
+        } catch (e: Exception) {
+            dueDateEditText.error = "Invalid date format (YYYY-MM-DD)"
+            null
+        }
+    }
 
-    // TODO: Launch a coroutine to save the note in the background (non-UI thread)
-        // TODO: Check if the note content is too large for direct storage in the database
-        // TODO: Save the content as a file if it's too large for the database
-        // TODO: Store the note content directly in the database if it's small enough
-        // TODO: Insert or update the note in the Room database using the DAO method
-        // TODO: Ensure that noteId is assigned (could be auto-generated in Room)
-        // TODO: Implement logic to create an abstract from the content
-        // TODO: Ensure that userId is passed correctly (it should be associated with the note)
-        // TODO: Switch back to the main thread to navigate the UI after saving
-        // TODO: Navigate back to the previous screen (e.g., after saving the note)
+
+
+    private fun validateInputs(): Boolean {
+        if (titleEditText.text.isBlank()) {
+            titleEditText.error = "Title is required"
+            return false
+        }
+        if (priorityEditText.text.toString().toIntOrNull() == null) {
+            priorityEditText.error = "Priority must be a valid number"
+            return false
+        }
+        if (dueDateEditText.text.isNotBlank()) {
+            try {
+                java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(dueDateEditText.text.toString())
+            } catch (e: Exception) {
+                dueDateEditText.error = "Invalid date format (YYYY-MM-DD)"
+                return false
+            }
+        }
+        return true
+    }
+
+
 
     private fun saveTaskContentToFile(userId: Int, content: String): String {
         val timestamp = Calendar.getInstance().time.time
