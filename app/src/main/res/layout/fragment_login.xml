@@ -24,6 +24,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/username_hint"
+        android:background="@drawable/edittext_background"
+        android:gravity="center"
         app:layout_constraintTop_toBottomOf="@id/errorTextView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -35,6 +37,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/password_hint"
+        android:background="@drawable/edittext_background"
+        android:gravity="center"
         android:inputType="textPassword"
         app:layout_constraintTop_toBottomOf="@id/usernameEditText"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -43,13 +47,16 @@
 
     <!-- Login Button -->
     <Button
-        android:id="@+id/loginButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_button"
-        app:layout_constraintTop_toBottomOf="@id/passwordEditText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="16dp"/>
+            android:id="@+id/loginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:backgroundTint="#ADD8E6"
+            android:text="@string/login_button"
+            app:layout_constraintTop_toBottomOf="@id/passwordEditText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="16dp"
+            android:textColorLink="#66FBD3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
