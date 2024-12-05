@@ -84,6 +84,7 @@ class TaskListFragment(
                             taskPath = null,
                             lastEdited = Calendar.getInstance().time,
                             priority = 0,
+                            dueDate = Calendar.getInstance().time,
                             estimatedTime = 0
                         ), userState.id
                     )
@@ -169,21 +170,17 @@ class TaskListFragment(
                 taskDB.userDao().getUsersWithTaskListsByIdPaged(userState.id)
             }
         ).flow
-
         lifecycleScope.launch {
             pager.collectLatest { pagingData ->
                 adapter.submitData(pagingData)
             }
         }
-
         lifecycleScope.launch {
+            //pager.collectLatest { pagingData -> adapter.submitData(pagingData) }
             val tasks = taskDB.userDao().getUsersWithTaskListsById(userState.id)
             showNotification(tasks)
         }
     }
-
-    // TODO: Cache the paging flow in the lifecycle scope and collect the paginated data
-    // TODO: Submit the paginated data to the adapter to display it in the RecyclerView
 
 
     private fun showDeleteBottomSheet() {
@@ -199,18 +196,12 @@ class TaskListFragment(
             deletePrompt.text = "Delete Task: ${taskToDelete.taskTitle}"
 
             deleteButton.setOnClickListener {
-                // TODO: Launch a coroutine to perform the note deletion in the background
                 lifecycleScope.launch{
                     taskDB.deleteDao().deleteTasks(listOf(taskToDelete.taskId))
                     deleteIt = false
                     bottomSheetDialog.dismiss()
                     loadTasks()
                 }
-                // TODO: Implement the logic to delete the note from the Room database using the DAO
-
-                // TODO: Reset any flags or variables that control the delete state
-                // TODO: Dismiss the bottom sheet dialog after the deletion is completed
-                // TODO: Reload the list of notes to reflect the deleted note (e.g., refresh UI)
             }
 
             cancelButton.setOnClickListener {
@@ -227,9 +218,7 @@ class TaskListFragment(
     }
 
     private fun deleteAccountAndLogout() {
-        // TODO: Retrieve the current user state from the ViewModel (contains user details)
         val userState = userViewModel.userState.value
-        // TODO: Launch a coroutine to perform account deletion in the background
         lifecycleScope.launch(Dispatchers.IO){
             val deleteDao = taskDB.deleteDao()
             deleteDao.delete(userState.id)
@@ -260,7 +249,6 @@ class TaskListFragment(
             notificationManager.createNotificationChannel(channel)
         }
     }
-
     private fun checkAndRequestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
@@ -276,11 +264,9 @@ class TaskListFragment(
             }
         }
     }
-
     companion object {
         private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1
     }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -300,7 +286,6 @@ class TaskListFragment(
             }
         }
     }
-
     private fun showNotification(taskSummaries: List<TaskSummary>) {
         // Check if POST_NOTIFICATIONS permission is granted
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -312,14 +297,11 @@ class TaskListFragment(
             // Permission is not granted, don't show the notification
             return
         }
-
         if (taskSummaries.isEmpty()) return
-
         // Build the task list as a string
         val taskList = taskSummaries.joinToString(separator = "\n") { task ->
             "- ${task.taskTitle}: ${task.taskAbstract}"
         }
-
         // Build the notification
         val builder = NotificationCompat.Builder(requireContext(), "taskChannel")
             .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with your app's notification icon
@@ -327,7 +309,6 @@ class TaskListFragment(
             .setContentText("You have ${taskSummaries.size} tasks!")
             .setStyle(NotificationCompat.BigTextStyle().bigText(taskList))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
         // Show the notification
         with(NotificationManagerCompat.from(requireContext())) {
             notify(1, builder.build())
