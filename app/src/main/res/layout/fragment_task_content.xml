@@ -29,11 +29,26 @@
                     android:textStyle="bold" />
 
             <!-- Start Date EditText -->
-            <EditText
-                    android:id="@+id/dueDateEditText"
+            <!-- DueDate and Button in a Horizontal LinearLayout -->
+            <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="DueDate (YYYY-MM-DD)" />
+                    android:orientation="horizontal">
+                <!-- DueDate EditText -->
+                <EditText
+                        android:id="@+id/dueDateEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="DueDate (YYYY-MM-DD HH:mm)"
+                        android:layout_weight="1" />
+                <!-- Set Date and Time Button -->
+                <Button
+                        android:id="@+id/setDateTimeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Set Time"
+                        android:layout_marginStart="8dp" />
+            </LinearLayout>
 
             <!-- Estimated Time EditText -->
             <EditText

@@ -306,7 +306,7 @@ class TaskListFragment(
         val builder = NotificationCompat.Builder(requireContext(), "taskChannel")
             .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with your app's notification icon
             .setContentTitle("Your Tasks")
-            .setContentText("You have ${taskSummaries.size} tasks!")
+            .setContentText("You have ${taskSummaries.size} task(s)!")
             .setStyle(NotificationCompat.BigTextStyle().bigText(taskList))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         // Show the notification
