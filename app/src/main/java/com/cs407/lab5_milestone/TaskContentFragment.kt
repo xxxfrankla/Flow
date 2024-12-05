@@ -1,5 +1,7 @@
 package com.cs407.lab5_milestone
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
@@ -17,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -31,11 +34,13 @@ class TaskContentFragment(
     private lateinit var priorityEditText: EditText
     private lateinit var estimatedTimeEditText: EditText
     private lateinit var dueDateEditText: EditText
+    private lateinit var setDateTimeButton: Button
 
     private var taskId: Int = 0
     private lateinit var taskDB: TaskDatabase
     private lateinit var userViewModel: UserViewModel
     private var userId: Int = 0
+    private val calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +66,7 @@ class TaskContentFragment(
         priorityEditText = view.findViewById(R.id.priorityEditText)
         estimatedTimeEditText = view.findViewById(R.id.estimatedTimeEditText)
         dueDateEditText = view.findViewById(R.id.dueDateEditText)
+        setDateTimeButton = view.findViewById(R.id.setDateTimeButton)
         return view
     }
 
@@ -89,7 +95,7 @@ class TaskContentFragment(
                         priorityEditText.setText(task.priority.toString())
                         estimatedTimeEditText.setText(task.estimatedTime?.toString())
                         dueDateEditText.setText(task.dueDate?.let { date ->
-                            java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                            java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
                                 .format(date)
                         })
                     }
@@ -100,10 +106,56 @@ class TaskContentFragment(
         saveButton.setOnClickListener {
             saveContent()
         }
+        setDateTimeButton.setOnClickListener {
+            showDateTimePicker()
+        }
     }
+    private fun showDateTimePicker() {
+        val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+
+        // Parse the current date from EditText
+        if (dueDateEditText.text.isNotBlank()) {
+            try {
+                calendar.time = dateFormatter.parse(dueDateEditText.text.toString()) ?: Date()
+            } catch (e: Exception) {
+                calendar.time = Date()
+            }
+        }
+
+        // Show DatePickerDialog
+        DatePickerDialog(
+            requireContext(),
+            { _, year, month, dayOfMonth ->
+                calendar.set(Calendar.YEAR, year)
+                calendar.set(Calendar.MONTH, month)
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+                // Show TimePickerDialog after selecting a date
+                TimePickerDialog(
+                    requireContext(),
+                    { _, hourOfDay, minute ->
+                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                        calendar.set(Calendar.MINUTE, minute)
+
+                        // Update the due date EditText
+                        dueDateEditText.setText(dateFormatter.format(calendar.time))
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    true
+                ).show()
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
+    }
+
     private fun readTaskContentFromFile(filePath: String): String {
         val file = File(filePath)
         return file.readText()
+
+
     }
 
     private fun setupMenu() {
@@ -181,11 +233,11 @@ class TaskContentFragment(
     private fun parseDueDate(): Date? {
         return try {
             if (dueDateEditText.text.isNotBlank()) {
-                java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
                     .parse(dueDateEditText.text.toString())
             } else null
         } catch (e: Exception) {
-            dueDateEditText.error = "Invalid date format (YYYY-MM-DD)"
+            dueDateEditText.error = "Invalid date format (YYYY-MM-DD HH:mm)"
             null
         }
     }
