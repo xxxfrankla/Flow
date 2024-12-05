@@ -43,7 +43,8 @@ class Converters {
         parentColumns = ["taskId"],
         childColumns = ["taskId"],
         onDelete = ForeignKey.CASCADE
-    )]
+    )],
+    indices = [Index(value = ["taskId"])]
 )
 data class UserTodoRelation(
     val userId: Int,
@@ -62,11 +63,12 @@ data class TodoItem(
 )
 
 data class TaskSummary(
-    val taskId: Int,
-    val taskTitle: String,
-    val taskDescription: String,
-    val dueDate: Date,
-    val priority: Int
+    @ColumnInfo(name = "taskId") val taskId: Int,
+    @ColumnInfo(name = "taskTitle") val taskTitle: String,
+    @ColumnInfo(name = "taskDescription") val taskDescription: String,
+    @ColumnInfo(name = "dueDate") val dueDate: Date,
+    @ColumnInfo(name = "priority") val priority: Int,
+    @ColumnInfo(name = "lastEdited") val lastEdited: Date
 )
 //DAO for interacting with the User Entity
 // DAO (Data Access Object) for interacting with the User entity in the database
@@ -82,6 +84,7 @@ interface UserDao {
     suspend fun getById(id: Int): User
 
     // Query to get a list of NoteSummary for a user, ordered by lastEdited
+    @RewriteQueriesToDropUnusedColumns
     @Query("""
         SELECT * FROM User, TodoItem, UserTodoRelation
         WHERE User.userId = :id
@@ -175,7 +178,7 @@ interface DeleteDao {
 }
 
 
-@Database(entities = [User::class, TodoItem::class, UserTodoRelation::class], version = 1)
+@Database(entities = [User::class, TodoItem::class, UserTodoRelation::class], version = 1, exportSchema = false)
 // Database class with all entities and DAOs
 @TypeConverters(Converters::class)
 abstract class ToDoDatabase : RoomDatabase() {
@@ -205,5 +208,5 @@ abstract class ToDoDatabase : RoomDatabase() {
             }
         }
     }
-
 }
+

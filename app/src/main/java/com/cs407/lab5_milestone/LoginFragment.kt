@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.cs407.lab5_milestone.data.NoteDatabase
+import com.cs407.lab5_milestone.data.ToDoDatabase
 import com.cs407.lab5_milestone.data.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
