@@ -17,6 +17,8 @@ import androidx.room.Transaction
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import androidx.room.Upsert
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.cs407.lab5_milestone.R
 import java.util.Date
 
@@ -54,7 +56,9 @@ data class Task(
     //Detailed content of the note (optional, might be null)
     @ColumnInfo(typeAffinity = ColumnInfo.TEXT) val taskDetail: String?,
     val taskPath: String?,
-    val lastEdited: Date
+    val lastEdited: Date,
+    val priority: Int,
+    val estimatedTime: Int?
 )
 
 //UserNoteRelation
@@ -213,7 +217,7 @@ interface DeleteDao {
 }
 
 // Database class with all entities and DAOs
-@Database(entities = [User::class, Task::class, UserTaskRelation::class], version = 1)
+@Database(entities = [User::class, Task::class, UserTaskRelation::class], version = 2)
 // Database class with all entities and DAOs
 @TypeConverters(Converters::class)
 abstract class TaskDatabase : RoomDatabase() {
@@ -236,12 +240,20 @@ abstract class TaskDatabase : RoomDatabase() {
                     context.applicationContext,
                     TaskDatabase::class.java,
                     context.getString(R.string.task_database) // Database name from resources
-                ).build()
+                ).addMigrations(MIGRATION_1_2)
+                .build()
                 INSTANCE = instance
                 // Return instance
                 instance
             }
         }
+    }
+}
+
+val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("ALTER TABLE Task ADD COLUMN priority INTEGER NOT NULL DEFAULT 0")
+        database.execSQL("ALTER TABLE Task ADD COLUMN estimatedTime INTEGER")
     }
 }
 

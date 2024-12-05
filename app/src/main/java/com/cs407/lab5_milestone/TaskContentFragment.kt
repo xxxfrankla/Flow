@@ -147,6 +147,7 @@ class TaskContentFragment(
         // Retrieve the title and content from EditText fields
         val title = titleEditText.text.toString()
         val content = contentEditText.text.toString()
+        //val priority =
 
         lifecycleScope.launch(Dispatchers.IO) {
 
@@ -162,7 +163,9 @@ class TaskContentFragment(
                 taskAbstract = taskAbstract,
                 taskDetail = if (taskPath == null) content else null,
                 taskPath = taskPath,
-                lastEdited = Calendar.getInstance().time
+                lastEdited = Calendar.getInstance().time,
+                priority = 0,
+                estimatedTime = 0
             )
             taskDB.taskDao().upsertTask(task, userId)
 

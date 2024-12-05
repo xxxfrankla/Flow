@@ -74,7 +74,9 @@ class TaskListFragment(
                             taskAbstract = "This is Task $i",
                             taskDetail = "Welcome to Task $i",
                             taskPath = null,
-                            lastEdited = Calendar.getInstance().time
+                            lastEdited = Calendar.getInstance().time,
+                            priority = 0,
+                            estimatedTime = 0
                         ), userState.id
                     )
                 }
