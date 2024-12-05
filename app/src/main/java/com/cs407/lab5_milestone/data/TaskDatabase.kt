@@ -75,7 +75,8 @@ data class Task(
         parentColumns = ["taskId"],
         childColumns = ["taskId"],
         onDelete = ForeignKey.CASCADE
-    )]
+    )],
+    indices = [Index(value = ["taskId"])]
 )
 data class UserTaskRelation(
     val userId: Int,
@@ -84,13 +85,12 @@ data class UserTaskRelation(
 //Summary projection of the Note entity
 // A summary projection of the Note entity, for displaying limited fields in queries
 data class TaskSummary(
-    val taskId: Int,
-    val taskTitle: String,
-    val taskAbstract: String,
-    val lastEdited: Date,
-    val dueDate: Date?,
-    val priority: Int
-
+    @ColumnInfo(name = "taskId") val taskId: Int,
+    @ColumnInfo(name = "taskTitle") val taskTitle: String,
+    @ColumnInfo(name = "taskAbstract") val taskAbstract: String,
+    @ColumnInfo(name = "lastEdited") val lastEdited: Date,
+    @ColumnInfo(name = "dueDate") val dueDate: Date?,
+    @ColumnInfo(name = "priority") val priority: Int
 )
 
 //DAO for interacting with the User Entity
@@ -109,22 +109,23 @@ interface UserDao {
     // Query to get a list of NoteSummary for a user, ordered by lastEdited
     @Query(
         """
-        SELECT * FROM User, Task, UserTaskRelation
-        WHERE User.userId = :id
-        AND UserTaskRelation.userId = User.userId
-        AND Task.taskId = UserTaskRelation.taskId
+        SELECT Task.taskId, Task.taskTitle, Task.taskAbstract, Task.lastEdited, Task.priority, Task.dueDate
+        FROM Task
+        INNER JOIN UserTaskRelation ON Task.taskId = UserTaskRelation.taskId
+        WHERE UserTaskRelation.userId =:id
         ORDER BY Task.lastEdited DESC
-    """
+        """
     )
     suspend fun getUsersWithTaskListsById(id: Int): List<TaskSummary>
 
     // Same query but returns a PagingSource for pagination
     @Query(
         """
-        SELECT * FROM User, Task, UserTaskRelation
-        WHERE User.userId = :id
-        AND UserTaskRelation.userId = User.userId
-        AND Task.taskId = UserTaskRelation.taskId
+        SELECT Task.taskId, Task.taskTitle, Task.taskAbstract, Task.lastEdited, 
+           Task.priority, Task.dueDate
+        FROM Task
+        INNER JOIN UserTaskRelation ON Task.taskId = UserTaskRelation.taskId
+        WHERE UserTaskRelation.userId = :id
         ORDER BY Task.lastEdited DESC
     """
     )
@@ -237,7 +238,7 @@ interface DeleteDao {
 }
 
 // Database class with all entities and DAOs
-@Database(entities = [User::class, Task::class, UserTaskRelation::class], version = 2)
+@Database(entities = [User::class, Task::class, UserTaskRelation::class], version = 1)
 // Database class with all entities and DAOs
 @TypeConverters(Converters::class)
 abstract class TaskDatabase : RoomDatabase() {
@@ -260,7 +261,7 @@ abstract class TaskDatabase : RoomDatabase() {
                     context.applicationContext,
                     TaskDatabase::class.java,
                     context.getString(R.string.task_database) // Database name from resources
-                ).addMigrations(MIGRATION_1_2)
+                )
                 .build()
                 INSTANCE = instance
                 // Return instance
@@ -270,6 +271,9 @@ abstract class TaskDatabase : RoomDatabase() {
     }
 }
 
+fun resetDatabase(context: Context) {
+    context.deleteDatabase("taskDatabase")
+}
 val MIGRATION_1_2 = object : Migration(1, 2) {
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL("ALTER TABLE Task ADD COLUMN priority INTEGER NOT NULL DEFAULT 0")

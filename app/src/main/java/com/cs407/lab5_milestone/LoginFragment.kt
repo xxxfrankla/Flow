@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.cs407.lab5_milestone.data.TaskDatabase
 import com.cs407.lab5_milestone.data.User
+import com.cs407.lab5_milestone.data.resetDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -49,7 +50,6 @@ class LoginFragment(
         } else {
             ViewModelProvider(requireActivity())[UserViewModel::class.java]
         }
-
         userPasswdKV = requireContext().getSharedPreferences(getString(R.string.userPasswdKV), Context.MODE_PRIVATE)
         taskDB = TaskDatabase.getDatabase(requireContext())
         return view
@@ -65,18 +65,24 @@ class LoginFragment(
         }
         // Set the login button click action
         loginButton.setOnClickListener {
+            //resetDatabase(requireContext())
             val username = usernameEditText.text.toString()
             val password = passwordEditText.text.toString()
             if (username.isEmpty() || password.isEmpty()) {
                 errorTextView.visibility = View.VISIBLE
             }else{
                 viewLifecycleOwner.lifecycleScope.launch {
-                    val ins = withContext(Dispatchers.IO) {getUserPasswd(username, password)}
-                    if (ins) {
-                        val userId = withContext(Dispatchers.IO){taskDB.userDao().getByName(username).userId}
-                        userViewModel.setUser(UserState(userId, username, password))
-                        findNavController().navigate(R.id.action_loginFragment_to_taskListFragment)
-                    } else {
+                    try {
+                        val ins = withContext(Dispatchers.IO) { getUserPasswd(username, password) }
+                        if (ins) {
+                            val userId = withContext(Dispatchers.IO) { taskDB.userDao().getByName(username).userId }
+                            userViewModel.setUser(UserState(userId, username, password))
+                            findNavController().navigate(R.id.action_loginFragment_to_taskListFragment)
+                        } else {
+                            errorTextView.visibility = View.VISIBLE
+                        }
+                    } catch (e: Exception) {
+                        errorTextView.text = "An error occurred: ${e.message}"
                         errorTextView.visibility = View.VISIBLE
                     }
                 }
