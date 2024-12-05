@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.cs407.lab5_milestone.data.TaskDatabase
 import com.cs407.lab5_milestone.data.User
+import com.cs407.lab5_milestone.data.resetDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -65,6 +66,7 @@ class LoginFragment(
         }
         // Set the login button click action
         loginButton.setOnClickListener {
+            //resetDatabase(requireContext())
             val username = usernameEditText.text.toString()
             val password = passwordEditText.text.toString()
             if (username.isEmpty() || password.isEmpty()) {

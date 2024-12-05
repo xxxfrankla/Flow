@@ -126,10 +126,10 @@ class TaskListFragment(
         val userState = userViewModel.userState.value
         greetingTextView.text = getString(R.string.greeting_text, userState.name)
 
+        // Initialize RecyclerView and Adapter
         adapter = TaskAdapter(
             onClick = { taskId ->
-                val action =
-                    TaskListFragmentDirections.actionTaskListFragmentToTaskContentFragment(taskId)
+                val action = TaskListFragmentDirections.actionTaskListFragmentToTaskContentFragment(taskId)
                 findNavController().navigate(action)
             },
             onLongClick = { taskSummary ->
@@ -138,10 +138,10 @@ class TaskListFragment(
                 showDeleteBottomSheet()
             }
         )
-
         taskRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         taskRecyclerView.adapter = adapter
 
+        // Load tasks from database (already sorted by query)
         loadTasks()
 
         fab.setOnClickListener {
@@ -150,27 +150,25 @@ class TaskListFragment(
         }
     }
 
+
     private fun loadTasks() {
-        // TODO: Retrieve the current user state from the ViewModel (to get the user ID)
         val userState = userViewModel.userState.value
 
-        // TODO: Set up paging configuration with a specified page size and prefetch distance
         val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10)
 
-        // TODO: Implement a query to retrieve the paged list of notes associated with the user
         val pager = Pager(
             config = pagingConfig,
             pagingSourceFactory = {
                 taskDB.userDao().getUsersWithTaskListsByIdPaged(userState.id)
-            }).flow
-        // TODO: Launch a coroutine to collect the paginated flow and submit it to the RecyclerView adapter
+            }
+        ).flow
+
         lifecycleScope.launch {
-            pager.collectLatest { pagingData -> adapter.submitData(pagingData) }
+            pager.collectLatest { pagingData ->
+                adapter.submitData(pagingData) // Directly send sorted tasks to adapter
+            }
         }
     }
-    // TODO: Cache the paging flow in the lifecycle scope and collect the paginated data
-    // TODO: Submit the paginated data to the adapter to display it in the RecyclerView
-
 
     private fun showDeleteBottomSheet() {
         if (deleteIt) {
