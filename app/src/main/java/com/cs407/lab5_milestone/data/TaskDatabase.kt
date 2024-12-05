@@ -105,11 +105,11 @@ interface UserDao {
     // Query to get a list of NoteSummary for a user, ordered by lastEdited
     @Query(
         """
-        SELECT * FROM User, Task, UserTaskRelation
-        WHERE User.userId = :id
-        AND UserTaskRelation.userId = User.userId
-        AND Task.taskId = UserTaskRelation.taskId
-        ORDER BY Task.lastEdited DESC
+    SELECT Task.taskId, Task.taskTitle, Task.taskAbstract, Task.lastEdited
+    FROM Task
+    INNER JOIN UserTaskRelation ON Task.taskId = UserTaskRelation.taskId
+    WHERE UserTaskRelation.userId =:id
+    ORDER BY Task.lastEdited DESC
     """
     )
     suspend fun getUsersWithTaskListsById(id: Int): List<TaskSummary>

@@ -30,6 +30,14 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.pm.PackageManager
+import android.os.Build
+import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 
 class TaskListFragment(
     private val injectedUserViewModel: UserViewModel? = null
@@ -92,12 +100,13 @@ class TaskListFragment(
         greetingTextView = view.findViewById(R.id.greetingTextView)
         taskRecyclerView = view.findViewById(R.id.taskRecyclerView)
         fab = view.findViewById(R.id.fab)
+        createNotificationChannel()
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        checkAndRequestNotificationPermission()
         val menuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -150,23 +159,29 @@ class TaskListFragment(
     }
 
     private fun loadTasks() {
-        // TODO: Retrieve the current user state from the ViewModel (to get the user ID)
         val userState = userViewModel.userState.value
 
-        // TODO: Set up paging configuration with a specified page size and prefetch distance
         val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10)
 
-        // TODO: Implement a query to retrieve the paged list of notes associated with the user
         val pager = Pager(
             config = pagingConfig,
             pagingSourceFactory = {
                 taskDB.userDao().getUsersWithTaskListsByIdPaged(userState.id)
-            }).flow
-        // TODO: Launch a coroutine to collect the paginated flow and submit it to the RecyclerView adapter
+            }
+        ).flow
+
         lifecycleScope.launch {
-            pager.collectLatest { pagingData -> adapter.submitData(pagingData) }
+            pager.collectLatest { pagingData ->
+                adapter.submitData(pagingData)
+            }
+        }
+
+        lifecycleScope.launch {
+            val tasks = taskDB.userDao().getUsersWithTaskListsById(userState.id)
+            showNotification(tasks)
         }
     }
+
     // TODO: Cache the paging flow in the lifecycle scope and collect the paginated data
     // TODO: Submit the paginated data to the adapter to display it in the RecyclerView
 
@@ -230,9 +245,93 @@ class TaskListFragment(
                 findNavController().navigate(R.id.action_taskListFragment_to_loginFragment)
             }
         }
-        // TODO: Implement the logic to delete the user's data from the Room database
-        // TODO: Remove the user's credentials from SharedPreferences
-        // TODO: Reset the user state in the ViewModel to represent a logged-out state
-        // TODO: Navigate back to the login screen after the account is deleted and user is logged out
     }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Task Notifications"
+            val descriptionText = "Channel for task notifications"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel("taskChannel", name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: NotificationManager =
+                requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun checkAndRequestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Request the permission
+                requestPermissions(
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    NOTIFICATION_PERMISSION_REQUEST_CODE
+                )
+            }
+        }
+    }
+
+    companion object {
+        private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+            } else {
+                // Permission denied, notify the user
+                Toast.makeText(
+                    requireContext(),
+                    "Notification permission denied. Notifications won't work.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun showNotification(taskSummaries: List<TaskSummary>) {
+        // Check if POST_NOTIFICATIONS permission is granted
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Permission is not granted, don't show the notification
+            return
+        }
+
+        if (taskSummaries.isEmpty()) return
+
+        // Build the task list as a string
+        val taskList = taskSummaries.joinToString(separator = "\n") { task ->
+            "- ${task.taskTitle}: ${task.taskAbstract}"
+        }
+
+        // Build the notification
+        val builder = NotificationCompat.Builder(requireContext(), "taskChannel")
+            .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with your app's notification icon
+            .setContentTitle("Your Tasks")
+            .setContentText("You have ${taskSummaries.size} tasks!")
+            .setStyle(NotificationCompat.BigTextStyle().bigText(taskList))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        // Show the notification
+        with(NotificationManagerCompat.from(requireContext())) {
+            notify(1, builder.build())
+        }
+    }
+
 }
