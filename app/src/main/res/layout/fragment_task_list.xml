@@ -5,29 +5,54 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Greeting Text -->
-    <TextView
-        android:id="@+id/greetingTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:layout_margin="16dp"/>
+    <!-- A vertical LinearLayout for stacking the title, line, and RecyclerView -->
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:background="?attr/colorSurfaceVariant">
+        <!-- Centered "TODO List" TextView -->
+        <TextView
+                android:id="@+id/greetingTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TODO List"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                android:layout_marginBottom="8dp" />
 
-    <!-- RecyclerView for notes -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/taskRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="60dp"/>
+        <!-- Full horizontal line under the title -->
+        <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                app:dividerColor="?attr/colorOutline"
+                app:dividerThickness="2dp"
+                android:layout_marginBottom="16dp" />
 
-    <!-- Floating Action Button -->
+        <!-- RecyclerView below the line -->
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/taskRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginBottom="60dp"
+                android:clipToPadding="false"/>
+
+    </LinearLayout>
+
+    <!-- Floating Action Button in the bottom-right corner -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@android:drawable/ic_input_add"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"/>
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@android:drawable/ic_input_add"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

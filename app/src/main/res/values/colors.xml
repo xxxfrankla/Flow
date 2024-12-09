@@ -4,7 +4,15 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="priority_high">#FFCDD2</color> <!-- Light Red -->
-    <color name="priority_medium">#FFF9C4</color> <!-- Light Yellow -->
-    <color name="priority_low">#C8E6C9</color> <!-- Light Green -->
-    <color name="priority_default">#E0E0E0</color> <!-- Light Gray -->
+
+    <color name="colorPrimary">#00B0FF</color>
+    <color name="colorOnPrimary">#FFFFFF</color>       <!-- White text on primary -->
+    <color name="colorSurfaceVariant">#F1F1F1</color>  <!-- A light gray background variant -->
+    <color name="colorSecondary">#03DAC6</color>       <!-- A teal secondary color -->
+    <color name="colorError">#B00020</color>           <!-- Material error color -->
+
+    <color name="priority_medium">#FFF475</color>  <!-- Light Yellow -->
+    <color name="priority_low">#CCFF90</color>     <!-- Light Green -->
+    <color name="priority_default">#E0E0E0</color>
+
 </resources>

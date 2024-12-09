@@ -1,14 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="?attr/colorSurface"
+        android:padding="0dp"
+        tools:context=".TaskContentFragment">
 
+    <!-- Top App Bar -->
+    <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:title="TASK"
+            android:theme="?attr/actionBarTheme"
+            app:titleCentered="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Scrollable area for all input fields -->
     <ScrollView
+            android:id="@+id/scrollableArea"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintTop_toTopOf="parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="16dp"
+            app:layout_constraintTop_toBottomOf="@id/topAppBar"
             app:layout_constraintBottom_toTopOf="@id/saveButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -17,77 +38,145 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:paddingVertical="16dp">
 
-            <!-- Title EditText -->
-            <EditText
-                    android:id="@+id/titleEditText"
+            <!-- Task Title -->
+            <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="30sp"
-                    android:hint="Task"
-                    android:textStyle="bold" />
+                    android:hint="Task Title"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_marginBottom="20dp"
+                    app:boxBackgroundColor="?attr/colorSurfaceVariant"
+                    app:boxStrokeColor="?attr/colorPrimary"
+                    app:startIconDrawable="@drawable/ic_description"
+                    app:startIconTint="?attr/colorPrimary">
 
-            <!-- Start Date EditText -->
-            <!-- DueDate and Button in a Horizontal LinearLayout -->
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/titleEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences"
+                        android:textSize="20sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Due Date & Set Time -->
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                <!-- DueDate EditText -->
-                <EditText
-                        android:id="@+id/dueDateEditText"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="20dp">
+
+                <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:hint="DueDate (YYYY-MM-DD HH:mm)"
-                        android:layout_weight="1" />
-                <!-- Set Date and Time Button -->
-                <Button
+                        android:layout_weight="1"
+                        android:hint="Due Date (YYYY-MM-DD HH:mm)"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxBackgroundColor="?attr/colorSurfaceVariant"
+                        app:boxStrokeColor="?attr/colorPrimary"
+                        app:startIconDrawable="@drawable/ic_calendar"
+                        app:startIconTint="?attr/colorPrimary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/dueDateEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="datetime|textNoSuggestions"
+                            android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
                         android:id="@+id/setDateTimeButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
                         android:text="Set Time"
-                        android:layout_marginStart="8dp" />
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        app:icon="@drawable/ic_calendar"
+                        app:iconPadding="8dp"
+                        app:iconTint="?attr/colorOnPrimary"
+                        android:layout_marginLeft="8dp"/>
             </LinearLayout>
 
-            <!-- Estimated Time EditText -->
-            <EditText
-                    android:id="@+id/estimatedTimeEditText"
+            <!-- Estimated Time -->
+            <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Estimated Time (hours)"
-                    android:inputType="number" />
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_marginBottom="20dp"
+                    app:boxBackgroundColor="?attr/colorSurfaceVariant"
+                    app:boxStrokeColor="?attr/colorPrimary"
+                    app:startIconDrawable="@drawable/ic_timer"
+                    app:startIconTint="?attr/colorPrimary">
 
-            <!-- Priority EditText -->
-            <EditText
-                    android:id="@+id/priorityEditText"
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/estimatedTimeEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Priority -->
+            <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Priority (0-10)"
-                    android:inputType="number" />
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_marginBottom="20dp"
+                    app:boxBackgroundColor="?attr/colorSurfaceVariant"
+                    app:boxStrokeColor="?attr/colorPrimary"
+                    app:startIconDrawable="@drawable/ic_priority"
+                    app:startIconTint="?attr/colorPrimary">
 
-            <!-- Content EditText -->
-            <EditText
-                    android:id="@+id/contentEditText"
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/priorityEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Content -->
+            <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Write here..."
-                    android:textSize="20sp"
-                    android:gravity="top"
-                    android:inputType="textMultiLine"
-                    android:scrollbars="vertical" />
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:helperText="Describe the task in detail."
+                    android:layout_marginBottom="20dp"
+                    app:boxBackgroundColor="?attr/colorSurfaceVariant"
+                    app:boxStrokeColor="?attr/colorPrimary"
+                    app:startIconDrawable="@drawable/ic_description"
+                    app:startIconTint="?attr/colorPrimary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/contentEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:gravity="top"
+                        android:inputType="textMultiLine"
+                        android:padding="8dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
         </LinearLayout>
     </ScrollView>
 
     <!-- Save Button -->
-    <Button
+    <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Save"
+            android:textAllCaps="false"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_margin="16dp"
+            app:icon="@drawable/ic_save"
+            app:iconPadding="8dp"
+            app:iconTint="?attr/colorOnPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_margin="16dp" />
+            android:clickable="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

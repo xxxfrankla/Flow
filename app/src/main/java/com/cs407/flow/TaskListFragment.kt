@@ -133,7 +133,7 @@ class TaskListFragment(
         }, viewLifecycleOwner)
 
         val userState = userViewModel.userState.value
-        greetingTextView.text = getString(R.string.greeting_text, userState.name)
+        greetingTextView.text = getString(R.string.greeting_text)
 
         adapter = TaskAdapter(
             onClick = { taskId ->

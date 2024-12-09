@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="1080dp"
+        android:height="300dp"
+        android:viewportWidth="1080"
+        android:viewportHeight="300">
+
+    <!-- A simple path that creates a wavy shape. Adjust pathData for desired curvature -->
+    <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M0,300 Q540,100 1080,300 L1080,0 L0,0 z"/>
+</vector>

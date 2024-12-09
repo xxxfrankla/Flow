@@ -12,7 +12,17 @@
     <string name="save_button">Save</string>
     <string name="logout">Log Out</string>
     <string name="delete_account">Delete Account</string>
-    <string name="greeting_text">Welcome %1$s!</string>
+    <string name="greeting_text"><u>TODO List</u></string>
+
+
+
+
+    <!-- New Strings -->
+    <string name="welcome">Welcome</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="sign_up_button">Sign Up</string>
+    <string name="desc_decorative_image">Decorative background image</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="new_task">New Task</string>
 </resources>

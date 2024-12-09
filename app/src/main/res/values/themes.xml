@@ -1,8 +1,24 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Lab5milestone" parent="Theme.Material3.DayNight">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/colorSecondary</item>
+
+        <!-- Surface variant for backgrounds. -->
+        <item name="colorSurfaceVariant">@color/colorSurfaceVariant</item>
+
+        <!-- Error color. -->
+        <item name="colorError">@color/colorError</item>
+
+        <!-- Customize typography if needed -->
+        <!-- <item name="textAppearanceHeadline1">@style/...</item> -->
+
+        <!-- If you want outlined boxes to have primary-colored stroke -->
+        <!-- <item name="textInputLayoutOutlinedBoxStrokeColor">@color/colorPrimary</item> -->
     </style>
 
     <style name="Theme.Lab5milestone" parent="Base.Theme.Lab5milestone" />
