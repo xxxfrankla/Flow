@@ -2,14 +2,13 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Lab5milestone" parent="Theme.Material3.DayNight">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+
 
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/colorSecondary</item>
 
         <!-- Surface variant for backgrounds. -->
-        <item name="colorSurfaceVariant">@color/colorSurfaceVariant</item>
+
 
         <!-- Error color. -->
         <item name="colorError">@color/colorError</item>
@@ -19,6 +18,17 @@
 
         <!-- If you want outlined boxes to have primary-colored stroke -->
         <!-- <item name="textInputLayoutOutlinedBoxStrokeColor">@color/colorPrimary</item> -->
+
+        <item name="colorPrimary">@color/sky_blue_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Surface and background colors -->
+        <item name="colorSurface">@color/sky_blue_surface</item>
+
+
+        <!-- Adjust other colors if desired -->
+        <item name="colorSurfaceVariant">@color/sky_blue_surface</item>
+        <item name="colorOnSurface">@android:color/black</item>
     </style>
 
     <style name="Theme.Lab5milestone" parent="Base.Theme.Lab5milestone" />

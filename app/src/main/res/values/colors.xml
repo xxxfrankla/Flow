@@ -14,5 +14,8 @@
     <color name="priority_medium">#FFF475</color>  <!-- Light Yellow -->
     <color name="priority_low">#CCFF90</color>     <!-- Light Green -->
     <color name="priority_default">#E0E0E0</color>
+    <color name="sky_blue_primary">#3FA9F5</color>
+    <color name="sky_blue_surface">#E3F2FD</color>
+    
 
 </resources>

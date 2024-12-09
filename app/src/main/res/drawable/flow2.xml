@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="240dp"
+        android:height="120dp"
+        android:viewportWidth="240"
+        android:viewportHeight="120"
+        >
+
+    <!-- A more sophisticated wave pattern that spans the entire width:
+         The path creates two gentle arcs, starting from the center line,
+         arching upwards and then downwards, resulting in a flowing, dynamic shape. -->
+    <path
+            android:fillColor="@color/colorPrimary"
+            android:pathData="
+            M0,60
+            C40,10 80,10 120,60
+            C160,110 200,110 240,60
+            L240,120
+            L0,120
+            Z"/>
+</vector>

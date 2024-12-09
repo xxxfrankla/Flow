@@ -14,17 +14,7 @@
 
         <!-- Decorative top image or shape -->
         <!-- If you have a curved shape drawable, place it here -->
-        <ImageView
-                android:id="@+id/topBackgroundImage"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:scaleType="fitXY"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_percent="0.25"
-                android:src="@drawable/curved_top_shape"
-                android:contentDescription="@string/desc_decorative_image" />
+
 
         <!-- Title -->
 
@@ -53,7 +43,7 @@
                 android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@id/topBackgroundImage"
+                app:layout_constraintTop_toBottomOf="@id/topBackgroundImage2"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="16dp" />

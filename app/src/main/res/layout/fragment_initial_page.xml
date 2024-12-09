@@ -1,48 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/blue_gradient_background"
+        >
 
+    <!-- Top decorative illustration -->
+    <ImageView
+            android:id="@+id/flow_illustration"
+            android:layout_width="240dp"
+            android:layout_height="120dp"
+            android:contentDescription="@string/desc_decorative_image"
+            android:src="@drawable/flow2"
+            android:scaleType="fitCenter"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="60dp" />
+
+    <!-- Main text -->
     <TextView
-            android:id="@+id/main_title"
+            android:id="@+id/main_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Simple way to keep track of your daily schedule"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:layout_marginHorizontal="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/flow_illustration"
+            android:layout_marginTop="60dp"
+            android:layout_marginBottom="30dp" />
+
+    <!-- Page indicator -->
+    <TextView
+            android:id="@+id/page_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome to Flow"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginBottom="297dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+            android:text="---"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            app:layout_constraintTop_toBottomOf="@id/main_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="20dp" />
 
-    <Button
+    <!-- Start button -->
+    <com.google.android.material.button.MaterialButton
             android:id="@+id/start_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start"
-            android:backgroundTint="#ADD8E6"
-            android:textColor="#000000"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintVertical_bias="0.682" />
-
-    <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:srcCompat="@drawable/task"
-            android:layout_marginBottom="42dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/main_title"
-            app:layout_constraintTop_toTopOf="parent"
+            android:text="GET STARTED"
+            android:textAllCaps="false"
+            style="@style/Widget.MaterialComponents.Button"
+            android:backgroundTint="@android:color/holo_blue_light"
+            android:textColor="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/page_indicator"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="7dp"
-            android:layout_marginEnd="7dp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="60dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
