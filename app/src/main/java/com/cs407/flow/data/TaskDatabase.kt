@@ -59,7 +59,8 @@ data class Task(
     val lastEdited: Date,
     val priority: Int,
     val dueDate: Date?,
-    val estimatedTime: Int
+    val estimatedTime: Int,
+    val complete: Boolean
 )
 
 //UserNoteRelation
@@ -90,7 +91,8 @@ data class TaskSummary(
     @ColumnInfo(name = "taskAbstract") val taskAbstract: String,
     @ColumnInfo(name = "lastEdited") val lastEdited: Date,
     @ColumnInfo(name = "dueDate") val dueDate: Date?,
-    @ColumnInfo(name = "priority") val priority: Int
+    @ColumnInfo(name = "priority") val priority: Int,
+    @ColumnInfo(name = "complete") val complete: Boolean
 )
 
 //DAO for interacting with the User Entity
@@ -109,7 +111,7 @@ interface UserDao {
     // Query to get a list of NoteSummary for a user, ordered by lastEdited
     @Query(
         """
-        SELECT Task.taskId, Task.taskTitle, Task.taskAbstract, Task.lastEdited, Task.priority, Task.dueDate
+        SELECT Task.taskId, Task.taskTitle, Task.taskAbstract, Task.lastEdited, Task.priority, Task.dueDate, Task.complete
         FROM Task
         INNER JOIN UserTaskRelation ON Task.taskId = UserTaskRelation.taskId
         WHERE UserTaskRelation.userId =:id
@@ -122,7 +124,7 @@ interface UserDao {
     @Query(
         """
         SELECT Task.taskId, Task.taskTitle, Task.taskAbstract, Task.lastEdited, 
-           Task.priority, Task.dueDate
+           Task.priority, Task.dueDate, Task.complete
         FROM Task
         INNER JOIN UserTaskRelation ON Task.taskId = UserTaskRelation.taskId
         WHERE UserTaskRelation.userId = :id
@@ -134,6 +136,31 @@ interface UserDao {
     // Insert a new user into the database
     @Insert(entity = User::class)
     suspend fun insert(user: User)
+
+    // Query to get a list of non-overdue and non-completed TaskSummary for a user, ordered by lastEdited
+    @Query(
+        """
+        SELECT Task.taskId, Task.taskTitle, Task.taskAbstract, Task.lastEdited, Task.priority, Task.dueDate, Task.complete
+        FROM Task
+        INNER JOIN UserTaskRelation ON Task.taskId = UserTaskRelation.taskId
+        WHERE UserTaskRelation.userId = :id AND Task.dueDate >= :currentDate AND Task.complete = 0
+        ORDER BY Task.lastEdited DESC
+        """
+    )
+    suspend fun getNonOverdueTasksById(id: Int, currentDate: Long): List<TaskSummary>
+
+    // Same query but returns a PagingSource for pagination
+    @Query(
+        """
+        SELECT Task.taskId, Task.taskTitle, Task.taskAbstract, Task.lastEdited, 
+           Task.priority, Task.dueDate, Task.complete
+        FROM Task
+        INNER JOIN UserTaskRelation ON Task.taskId = UserTaskRelation.taskId
+        WHERE UserTaskRelation.userId = :id AND Task.dueDate >= :currentDate AND Task.complete = 0
+        ORDER BY Task.lastEdited DESC
+    """
+    )
+    fun getNonOverdueTasksByIdPaged(id: Int, currentDate: Long): PagingSource<Int, TaskSummary>
 }
 
 // DAO for interacting with the Task entity
@@ -192,6 +219,9 @@ interface TaskDao {
     @Query("SELECT * FROM Task WHERE estimatedTime <= :maxTime ORDER BY estimatedTime ASC")
     suspend fun getTasksWithEstimatedTime(maxTime: Int): List<Task>
 
+    // Query to get tasks that are not overdue and not completed
+    @Query("SELECT * FROM Task WHERE dueDate >= :currentDate AND complete = 0 ORDER BY dueDate ASC")
+    suspend fun getNonOverdueTasks(currentDate: Long): List<TaskSummary>
 
 //    @Query("""
 //        SELECT Note.noteId, Note.noteTitle, Note.noteAbstract, Note.lastEdited

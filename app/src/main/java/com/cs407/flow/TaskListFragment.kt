@@ -85,7 +85,8 @@ class TaskListFragment(
                             lastEdited = Calendar.getInstance().time,
                             priority = 0,
                             dueDate = Calendar.getInstance().time,
-                            estimatedTime = 0
+                            estimatedTime = 0,
+                            complete = false
                         ), userState.id
                     )
                 }
@@ -161,23 +162,26 @@ class TaskListFragment(
 
     private fun loadTasks() {
         val userState = userViewModel.userState.value
+        val currentTime = System.currentTimeMillis() // Get the current time in milliseconds
 
         val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10)
 
         val pager = Pager(
             config = pagingConfig,
             pagingSourceFactory = {
-                taskDB.userDao().getUsersWithTaskListsByIdPaged(userState.id)
+                taskDB.userDao().getNonOverdueTasksByIdPaged(userState.id, currentTime)
             }
         ).flow
+
         lifecycleScope.launch {
             pager.collectLatest { pagingData ->
                 adapter.submitData(pagingData)
             }
         }
+
         lifecycleScope.launch {
-            //pager.collectLatest { pagingData -> adapter.submitData(pagingData) }
-            val tasks = taskDB.userDao().getUsersWithTaskListsById(userState.id)
+            // Fetch only non-overdue tasks for notification
+            val tasks = taskDB.userDao().getNonOverdueTasksById(userState.id, currentTime)
             showNotification(tasks)
         }
     }

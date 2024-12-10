@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.cs407.flow.data.TaskDatabase
 import com.cs407.flow.data.User
+import com.cs407.flow.data.resetDatabase
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
@@ -61,9 +62,9 @@ class LoginFragment(
         passwordEditText.doAfterTextChanged { errorTextView.visibility = View.GONE }
 
         loginButton.setOnClickListener {
+            //resetDatabase(requireContext())
             attemptLogin()
         }
-
 
     }
 

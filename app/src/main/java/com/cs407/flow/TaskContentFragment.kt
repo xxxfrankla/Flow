@@ -22,6 +22,7 @@ import java.util.Date
 import java.util.Locale
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.widget.CheckBox
 import java.text.SimpleDateFormat
 
 class TaskContentFragment(
@@ -35,6 +36,7 @@ class TaskContentFragment(
     private lateinit var estimatedTimeEditText: EditText
     private lateinit var dueDateEditText: EditText
     private lateinit var setDateTimeButton: Button
+    private lateinit var markCompleteCheckBox: CheckBox
 
     private var taskId: Int = 0
     private lateinit var taskDB: TaskDatabase
@@ -67,6 +69,7 @@ class TaskContentFragment(
         estimatedTimeEditText = view.findViewById(R.id.estimatedTimeEditText)
         dueDateEditText = view.findViewById(R.id.dueDateEditText)
         setDateTimeButton = view.findViewById(R.id.setDateTimeButton)
+        markCompleteCheckBox = view.findViewById(R.id.markCompleteCheckBox)
         return view
     }
 
@@ -109,6 +112,19 @@ class TaskContentFragment(
 
         setDateTimeButton.setOnClickListener {
             showDateTimePicker()
+        }
+
+        priorityEditText.setOnKeyListener { _, keyCode, _ ->
+            if (keyCode in 48..57) { // ASCII codes for '0' to '9'
+                val input = priorityEditText.text.toString()
+                if (input.length > 0) {
+                    val value = input.toInt()
+                    if (value < 1 || value > 10) {
+                        priorityEditText.error = "Priority must be between 1 and 10"
+                    }
+                }
+            }
+            false
         }
     }
     private fun showDateTimePicker() {
@@ -196,6 +212,7 @@ class TaskContentFragment(
         val priority = priorityEditText.text.toString().toIntOrNull() ?: 0
         val estimatedTime = estimatedTimeEditText.text.toString().toIntOrNull() ?: 0
         val dueDate = parseDueDate()
+        val complete = markCompleteCheckBox.isChecked
 
         if (!validateInputs()) return
 
@@ -212,7 +229,8 @@ class TaskContentFragment(
                 lastEdited = Calendar.getInstance().time,
                 priority = priority,
                 estimatedTime = estimatedTime,
-                dueDate = dueDate
+                dueDate = dueDate,
+                complete = complete
             )
             taskDB.taskDao().upsertTask(task, userId)
 
@@ -243,8 +261,9 @@ class TaskContentFragment(
             titleEditText.error = "Title is required"
             return false
         }
-        if (priorityEditText.text.toString().toIntOrNull() == null) {
-            priorityEditText.error = "Priority must be a valid number"
+        val priorityValue = priorityEditText.text.toString().toIntOrNull()
+        if (priorityValue == null || priorityValue < 1 || priorityValue > 10) {
+            priorityEditText.error = "Priority must be a valid number between 1 and 10"
             return false
         }
         if (dueDateEditText.text.isNotBlank()) {

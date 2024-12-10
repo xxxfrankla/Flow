@@ -95,7 +95,7 @@
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         app:icon="@drawable/ic_calendar"
                         app:iconPadding="8dp"
-                        app:iconTint="?attr/colorOnPrimary"
+                        app:iconTint="#00B0FF"
                         android:layout_marginLeft="8dp"/>
             </LinearLayout>
 
@@ -136,6 +136,14 @@
                         android:layout_height="wrap_content"
                         android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Mark as Complete CheckBox -->
+            <CheckBox
+                    android:id="@+id/markCompleteCheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mark as complete"
+                    android:layout_marginBottom="20dp" />
 
             <!-- Content -->
             <com.google.android.material.textfield.TextInputLayout

@@ -41,10 +41,10 @@ class TaskAdapter(
 
         fun bind(taskSummary: TaskSummary) {
             taskTitle.text = taskSummary.taskTitle
-            taskAbstract.text = taskSummary.taskAbstract
+            taskAbstract.text = "Task: ${taskSummary.taskAbstract}"
             val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-            dueDate.text = taskSummary.dueDate?.let { dateFormatter.format(it) }
-            priority.text = taskSummary.priority.toString()
+            dueDate.text = taskSummary.dueDate?.let { "Due: ${dateFormatter.format(it)}" } ?: "Due: Not specified"
+            priority.text = "Priority: ${taskSummary.priority.toString()}"
 
             val backgroundColor = when (taskSummary.priority) {
                 1 -> itemView.context.getColor(R.color.priority_high) // Define this color in res/values/colors.xml

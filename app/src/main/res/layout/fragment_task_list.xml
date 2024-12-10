@@ -18,7 +18,7 @@
                 android:id="@+id/greetingTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TODO List"
+                android:text="@string/todo_list"
                 android:textAlignment="center"
                 android:gravity="center"
                 android:textSize="20sp"
@@ -53,6 +53,7 @@
             android:layout_height="wrap_content"
             app:srcCompat="@android:drawable/ic_input_add"
             android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"/>
+            android:layout_margin="16dp"
+            app:backgroundTint="#73D1FB"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
