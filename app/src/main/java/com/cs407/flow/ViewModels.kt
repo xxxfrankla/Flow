@@ -26,14 +26,13 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    // Function to fetch and sort tasks based on the user's ID
     fun fetchAndSortTasks(taskDao: TaskDao) {
         viewModelScope.launch {
             userState.collect { user ->
-                if (user.id != 0) { // Ensure we have a valid user ID
-                    val tasks = taskDao.getTasksOrderedByDueDate() // Fetch tasks
-                    val sorted = sortTasksByPriorityAndDueDate(tasks) // Apply sorting
-                    _sortedTasks.emit(sorted) // Emit sorted tasks
+                if (user.id != 0) {
+                    val tasks = taskDao.getTasksOrderedByDueDate()
+                    val sorted = sortTasksByPriorityAndDueDate(tasks)
+                    _sortedTasks.emit(sorted)
                 }
             }
         }
@@ -46,7 +45,7 @@ class UserViewModel : ViewModel() {
             val daysUntilDue = if (task.dueDate != null) {
                 ((task.dueDate.time - currentDate) / (1000 * 60 * 60 * 24)).toInt()
             } else {
-                Int.MAX_VALUE // No due date = lowest priority
+                Int.MAX_VALUE
             }
 
             val weightDueDate = -1

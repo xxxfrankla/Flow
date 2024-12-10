@@ -6,9 +6,7 @@
         android:viewportHeight="120"
         >
 
-    <!-- A more sophisticated wave pattern that spans the entire width:
-         The path creates two gentle arcs, starting from the center line,
-         arching upwards and then downwards, resulting in a flowing, dynamic shape. -->
+
     <path
             android:fillColor="@color/colorPrimary"
             android:pathData="

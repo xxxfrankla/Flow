@@ -66,11 +66,9 @@ class TaskListFragment(
         userViewModel = if (injectedUserViewModel != null) {
             injectedUserViewModel
         } else {
-            // TODO - Use ViewModelProvider to init UserViewModel
             ViewModelProvider(requireActivity())[UserViewModel::class.java]
         }
 
-        // Manually create 1000 notes for "large" user
         val userState = userViewModel.userState.value
         lifecycleScope.launch {
             val countTask = taskDB.taskDao().userTaskCount(userState.id)
@@ -179,7 +177,6 @@ class TaskListFragment(
         }
 
         lifecycleScope.launch {
-            // Fetch only non-overdue tasks for notification
             val tasks = taskDB.userDao().getNonOverdueTasksById(userState.id, currentTime)
             showNotification(tasks)
         }
@@ -259,7 +256,6 @@ class TaskListFragment(
                     android.Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                // Request the permission
                 requestPermissions(
                     arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
                     NOTIFICATION_PERMISSION_REQUEST_CODE
@@ -278,9 +274,7 @@ class TaskListFragment(
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted
             } else {
-                // Permission denied, notify the user
                 Toast.makeText(
                     requireContext(),
                     "Notification permission denied. Notifications won't work.",
@@ -301,13 +295,13 @@ class TaskListFragment(
             return
         }
         if (taskSummaries.isEmpty()) return
-        // Build the task list as a string
+
         val taskList = taskSummaries.joinToString(separator = "\n") { task ->
             "- ${task.taskTitle}: ${task.taskAbstract}"
         }
         // Build the notification
         val builder = NotificationCompat.Builder(requireContext(), "taskChannel")
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with your app's notification icon
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("Your Tasks")
             .setContentText("You have ${taskSummaries.size} task(s)!")
             .setStyle(NotificationCompat.BigTextStyle().bigText(taskList))

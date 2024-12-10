@@ -59,7 +59,7 @@ class TaskAdapter(
                 8 -> itemView.context.getColor(R.color.priority_8)
                 9 -> itemView.context.getColor(R.color.priority_9)
                 10 -> itemView.context.getColor(R.color.priority_10)
-                else -> itemView.context.getColor(R.color.white) // Fallback for undefined priorities
+                else -> itemView.context.getColor(R.color.white)
             }
             cardView.setCardBackgroundColor(backgroundColor)
 

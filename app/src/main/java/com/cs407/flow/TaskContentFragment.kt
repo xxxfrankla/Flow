@@ -52,7 +52,6 @@ class TaskContentFragment(
         userViewModel = if (injectedUserViewModel != null) {
             injectedUserViewModel
         } else {
-            // TODO - Use ViewModelProvider to init UserViewModel
             ViewModelProvider(requireActivity())[UserViewModel::class.java]
         }
         userId = userViewModel.userState.value.id
@@ -81,7 +80,6 @@ class TaskContentFragment(
         setupBackNavigation()
 
         if (taskId != 0) {
-            // TODO: Launch a coroutine to fetch the note from the database in the background
             lifecycleScope.launch {
                 val task = taskDB.taskDao().getById(taskId)
                 var content: String? = task?.taskDetail
@@ -116,7 +114,7 @@ class TaskContentFragment(
         }
 
         priorityEditText.setOnKeyListener { _, keyCode, _ ->
-            if (keyCode in 48..57) { // ASCII codes for '0' to '9'
+            if (keyCode in 48..57) {
                 val input = priorityEditText.text.toString()
                 if (input.length > 0) {
                     val value = input.toInt()
@@ -130,7 +128,6 @@ class TaskContentFragment(
     }
     private fun showDateTimePicker() {
         val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-        // Parse the current date from EditText
         if (dueDateEditText.text.isNotBlank()) {
             try {
                 calendar.time = dateFormatter.parse(dueDateEditText.text.toString()) ?: Date()
@@ -138,20 +135,17 @@ class TaskContentFragment(
                 calendar.time = Date()
             }
         }
-        // Show DatePickerDialog
         DatePickerDialog(
             requireContext(),
             { _, year, month, dayOfMonth ->
                 calendar.set(Calendar.YEAR, year)
                 calendar.set(Calendar.MONTH, month)
                 calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                // Show TimePickerDialog after selecting a date
                 TimePickerDialog(
                     requireContext(),
                     { _, hourOfDay, minute ->
                         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                         calendar.set(Calendar.MINUTE, minute)
-                        // Update the due date EditText
                         dueDateEditText.setText(dateFormatter.format(calendar.time))
                     },
                     calendar.get(Calendar.HOUR_OF_DAY),
@@ -308,7 +302,7 @@ class TaskContentFragment(
         val hoursUntilDue = if (dueDate != null) {
             ((dueDate.time - currentTime) / (1000 * 60 * 60)).toDouble()
         } else {
-            Double.MAX_VALUE // No due date = lowest priority
+            Double.MAX_VALUE
         }
 
         // Weight adjustments based on proximity to the due date

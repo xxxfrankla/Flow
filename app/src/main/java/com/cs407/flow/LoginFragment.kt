@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
 import java.security.MessageDigest
 
 class LoginFragment(
-    private val injectedUserViewModel: UserViewModel? = null // For testing only
+    private val injectedUserViewModel: UserViewModel? = null
 ) : Fragment() {
 
     private lateinit var usernameEditText: TextInputEditText
@@ -75,7 +75,7 @@ class LoginFragment(
         val password = passwordEditText.text.toString().trim()
 
         if (username.isEmpty() || password.isEmpty()) {
-            errorTextView.text = getString(R.string.fail_login) // "Invalid credentials"
+            errorTextView.text = getString(R.string.fail_login)
             errorTextView.visibility = View.VISIBLE
         } else {
             viewLifecycleOwner.lifecycleScope.launch {
