@@ -46,6 +46,7 @@ class TaskAdapter(
             dueDate.text = taskSummary.dueDate?.let { "Due: ${dateFormatter.format(it)}" } ?: "Due: Not specified"
             priority.text = "Priority: ${taskSummary.priority.toString()}"
 
+            val cardView = itemView as androidx.cardview.widget.CardView
             // Set item background color based on priority
             val backgroundColor = when (taskSummary.priority) {
                 1 -> itemView.context.getColor(R.color.priority_1)
@@ -60,8 +61,8 @@ class TaskAdapter(
                 10 -> itemView.context.getColor(R.color.priority_10)
                 else -> itemView.context.getColor(R.color.white) // Fallback for undefined priorities
             }
+            cardView.setCardBackgroundColor(backgroundColor)
 
-            itemView.setBackgroundColor(backgroundColor)
 
             itemView.setOnClickListener {
                 onClick(taskSummary.taskId)

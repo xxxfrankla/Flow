@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     card_view:cardElevation="6dp"
     android:layout_margin="8dp"
+    card_view:cardCornerRadius="22dp"
     >
 
     <LinearLayout
@@ -13,6 +14,7 @@
             android:padding="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
 
         <TextView
                 android:id="@+id/titleTextView"
