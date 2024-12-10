@@ -184,42 +184,19 @@ interface TaskDao {
     // Insert or update a Task and create a relation to the User if it's a new Task
     @Transaction
     suspend fun upsertTask(task: Task, userId: Int) {
-        // Calculate the score based on your algorithm
-        val updatedTask = task.copy(score = calculateTaskScore(task))
-
-        // Insert or update the task with the updated score
-        val rowId = upsert(updatedTask)
-
-        // If it's a new task, create the UserTaskRelation
+        val rowId = upsert(task)
         if (task.taskId == 0) {
             val taskId = getByRowId(rowId)
             insertRelation(UserTaskRelation(userId, taskId))
         }
     }
 
+
     @Query("SELECT * FROM Task ORDER BY score DESC, dueDate ASC, priority DESC")
     fun getTasksOrderedByScorePaged(): PagingSource<Int, TaskSummary>
     @Query("SELECT * FROM Task ORDER BY score DESC, dueDate ASC, priority DESC")
     suspend fun getTasksOrderedByScore(): List<Task>
 
-
-
-    private fun calculateTaskScore(task: Task): Double {
-        val currentTime = System.currentTimeMillis()
-        val hoursUntilDue = if (task.dueDate != null) {
-            ((task.dueDate.time - currentTime) / (1000 * 60 * 60)).toDouble()
-        } else {
-            Double.MAX_VALUE // No due date = lowest priority
-        }
-
-        val weightDueDate = -1000.0
-        val weightPriority = 10.0
-        val weightEstimatedTime = 0.5
-
-        return (weightDueDate * hoursUntilDue) +
-                (weightPriority * task.priority) +
-                (weightEstimatedTime * task.estimatedTime)
-    }
 
 
 

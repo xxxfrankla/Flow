@@ -214,13 +214,13 @@ class TaskContentFragment(
         val estimatedTime = estimatedTimeEditText.text.toString().toIntOrNull() ?: 0
         val dueDate = parseDueDate()
         val complete = markCompleteCheckBox.isChecked
+        val score = calculateTaskScore(priority, estimatedTime, dueDate)
 
         if (!validateInputs()) return
 
         lifecycleScope.launch(Dispatchers.IO) {
             val taskPath = if (content.length > 1024) saveTaskContentToFile(userId, content) else null
             val taskAbstract = splitAbstractDetail(content)
-            val score = calculateTaskScore(priority, estimatedTime, dueDate)
             val task = Task(
                 taskId = if (taskId == 0) 0 else taskId,
                 taskTitle = title,
