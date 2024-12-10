@@ -306,21 +306,26 @@ class TaskContentFragment(
     private fun calculateTaskScore(priority: Int, estimatedTime: Int, dueDate: Date?): Double {
         val currentTime = System.currentTimeMillis()
         val hoursUntilDue = if (dueDate != null) {
-            ((dueDate.time - currentTime) / (1000 * 60 * 60 )).toDouble()
+            ((dueDate.time - currentTime) / (1000 * 60 * 60)).toDouble()
         } else {
             Double.MAX_VALUE // No due date = lowest priority
         }
-        Log.d("TaskScoreDebug", "hoursUntilDue: $hoursUntilDue")
-        Log.d("TaskScoreDebug", "priority: $priority")
-        Log.d("TaskScoreDebug", "estimatedTime: $estimatedTime")
+
+        // Weight adjustments based on proximity to the due date
+        val weightDueDate = if (hoursUntilDue <= 24) {
+            -5
+        } else {
+            -2
+        }
+
+        val weightPriority = 3.0
 
 
-        val weightDueDate = -1000.0
-        val weightPriority = 2.0
-        val weightEstimatedTime = 0.5
+        val weightEstimatedTime = -1.0
 
         return (weightDueDate * hoursUntilDue) +
                 (weightPriority * priority) +
                 (weightEstimatedTime * estimatedTime)
     }
+
 }

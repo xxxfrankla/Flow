@@ -3,7 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="priority_high">#FFCDD2</color> <!-- Light Red -->
 
     <color name="colorPrimary">#00B0FF</color>
     <color name="colorOnPrimary">#FFFFFF</color>       <!-- White text on primary -->
@@ -11,11 +10,17 @@
     <color name="colorSecondary">#03DAC6</color>       <!-- A teal secondary color -->
     <color name="colorError">#B00020</color>           <!-- Material error color -->
 
-    <color name="priority_medium">#FFF475</color>  <!-- Light Yellow -->
-    <color name="priority_low">#CCFF90</color>     <!-- Light Green -->
-    <color name="priority_default">#E0E0E0</color>
     <color name="sky_blue_primary">#3FA9F5</color>
     <color name="sky_blue_surface">#E3F2FD</color>
-    
+    <color name="priority_10">#FF6B6B</color>  <!-- Bright Red -->
+    <color name="priority_9">#FF7F50</color>   <!-- Coral -->
+    <color name="priority_8">#FFA07A</color>   <!-- Light Salmon -->
+    <color name="priority_7">#FFC300</color>   <!-- Saffron -->
+    <color name="priority_6">#FFD700</color>   <!-- Gold -->
+    <color name="priority_5">#FFE066</color>   <!-- Light Yellow -->
+    <color name="priority_4">#FFFF99</color>   <!-- Pale Yellow -->
+    <color name="priority_2">#D4EDDA</color>   <!-- Light Green -->
+    <color name="priority_3">#A8DADC</color>   <!-- Soft Teal -->
+    <color name="priority_1">#E3F2FD</color>
 
 </resources>

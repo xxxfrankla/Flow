@@ -48,11 +48,19 @@ class TaskAdapter(
 
             // Set item background color based on priority
             val backgroundColor = when (taskSummary.priority) {
-                1 -> itemView.context.getColor(R.color.priority_high)
-                2 -> itemView.context.getColor(R.color.priority_medium)
-                3 -> itemView.context.getColor(R.color.priority_low)
-                else -> itemView.context.getColor(R.color.priority_default)
+                1 -> itemView.context.getColor(R.color.priority_1)
+                2 -> itemView.context.getColor(R.color.priority_2)
+                3 -> itemView.context.getColor(R.color.priority_3)
+                4 -> itemView.context.getColor(R.color.priority_4)
+                5 -> itemView.context.getColor(R.color.priority_5)
+                6 -> itemView.context.getColor(R.color.priority_6)
+                7 -> itemView.context.getColor(R.color.priority_7)
+                8 -> itemView.context.getColor(R.color.priority_8)
+                9 -> itemView.context.getColor(R.color.priority_9)
+                10 -> itemView.context.getColor(R.color.priority_10)
+                else -> itemView.context.getColor(R.color.white) // Fallback for undefined priorities
             }
+
             itemView.setBackgroundColor(backgroundColor)
 
             itemView.setOnClickListener {
