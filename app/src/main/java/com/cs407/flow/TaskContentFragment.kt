@@ -22,6 +22,7 @@ import java.util.Date
 import java.util.Locale
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.util.Log
 import android.widget.CheckBox
 import java.text.SimpleDateFormat
 
@@ -219,7 +220,7 @@ class TaskContentFragment(
         lifecycleScope.launch(Dispatchers.IO) {
             val taskPath = if (content.length > 1024) saveTaskContentToFile(userId, content) else null
             val taskAbstract = splitAbstractDetail(content)
-
+            val score = calculateTaskScore(priority, estimatedTime, dueDate)
             val task = Task(
                 taskId = if (taskId == 0) 0 else taskId,
                 taskTitle = title,
@@ -230,9 +231,13 @@ class TaskContentFragment(
                 priority = priority,
                 estimatedTime = estimatedTime,
                 dueDate = dueDate,
+                score = score,
                 complete = complete
             )
             taskDB.taskDao().upsertTask(task, userId)
+
+            val tasks = taskDB.taskDao().getTasksOrderedByScore()
+            userViewModel.updateSortedTasks(tasks)
 
             withContext(Dispatchers.Main) {
                 if (isAdded && view != null) {
@@ -241,6 +246,7 @@ class TaskContentFragment(
             }
         }
     }
+
 
     private fun parseDueDate(): Date? {
         return try {
@@ -295,5 +301,26 @@ class TaskContentFragment(
             stringAbstract = stringAbstract.substring(0, 20) + "..."
         }
         return stringAbstract
+    }
+
+    private fun calculateTaskScore(priority: Int, estimatedTime: Int, dueDate: Date?): Double {
+        val currentTime = System.currentTimeMillis()
+        val hoursUntilDue = if (dueDate != null) {
+            ((dueDate.time - currentTime) / (1000 * 60 * 60 )).toDouble()
+        } else {
+            Double.MAX_VALUE // No due date = lowest priority
+        }
+        Log.d("TaskScoreDebug", "hoursUntilDue: $hoursUntilDue")
+        Log.d("TaskScoreDebug", "priority: $priority")
+        Log.d("TaskScoreDebug", "estimatedTime: $estimatedTime")
+
+
+        val weightDueDate = -1000.0
+        val weightPriority = 2.0
+        val weightEstimatedTime = 0.5
+
+        return (weightDueDate * hoursUntilDue) +
+                (weightPriority * priority) +
+                (weightEstimatedTime * estimatedTime)
     }
 }

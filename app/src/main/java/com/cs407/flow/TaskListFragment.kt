@@ -20,9 +20,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.cs407.flow.data.Task
-import com.cs407.flow.data.TaskDatabase
-import com.cs407.flow.data.TaskSummary
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
@@ -38,6 +35,9 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.cs407.flow.data.Task
+import com.cs407.flow.data.TaskDatabase
+import com.cs407.flow.data.TaskSummary
 
 class TaskListFragment(
     private val injectedUserViewModel: UserViewModel? = null
@@ -162,8 +162,7 @@ class TaskListFragment(
 
     private fun loadTasks() {
         val userState = userViewModel.userState.value
-        val currentTime = System.currentTimeMillis() // Get the current time in milliseconds
-
+        val currentTime = System.currentTimeMillis()
         val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10)
 
         val pager = Pager(

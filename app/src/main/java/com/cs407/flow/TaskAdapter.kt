@@ -46,11 +46,12 @@ class TaskAdapter(
             dueDate.text = taskSummary.dueDate?.let { "Due: ${dateFormatter.format(it)}" } ?: "Due: Not specified"
             priority.text = "Priority: ${taskSummary.priority.toString()}"
 
+            // Set item background color based on priority
             val backgroundColor = when (taskSummary.priority) {
-                1 -> itemView.context.getColor(R.color.priority_high) // Define this color in res/values/colors.xml
+                1 -> itemView.context.getColor(R.color.priority_high)
                 2 -> itemView.context.getColor(R.color.priority_medium)
                 3 -> itemView.context.getColor(R.color.priority_low)
-                else -> itemView.context.getColor(R.color.priority_default) // Default color
+                else -> itemView.context.getColor(R.color.priority_default)
             }
             itemView.setBackgroundColor(backgroundColor)
 
@@ -62,6 +63,7 @@ class TaskAdapter(
                 true
             }
         }
+
     }
 
     companion object {

@@ -22,9 +22,6 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.cs407.flow.R
 import java.util.Date
 
-// Define your own @Entity, @Dao and @Database
-// Define your own @Entity, @Dao and @Database
-//User Entity with a unique ID on user name
 @Entity(
     indices = [Index(value = ["userName"], unique = true
     )]
@@ -37,7 +34,7 @@ data class User(
 // Converter class to handle Date <-> Long type conversions
 class Converters {
     @TypeConverter
-    fun fromTimestamp(value: Long): Date{
+    fun fromTimestamp(value: Long): Date {
         return Date(value)
     }
 
@@ -60,6 +57,7 @@ data class Task(
     val priority: Int,
     val dueDate: Date?,
     val estimatedTime: Int,
+    val score: Double = 0.0,
     val complete: Boolean
 )
 
@@ -128,7 +126,7 @@ interface UserDao {
         FROM Task
         INNER JOIN UserTaskRelation ON Task.taskId = UserTaskRelation.taskId
         WHERE UserTaskRelation.userId = :id
-        ORDER BY Task.lastEdited DESC
+        ORDER BY Task.score DESC
     """
     )
     fun getUsersWithTaskListsByIdPaged(id: Int): PagingSource<Int, TaskSummary>
@@ -140,11 +138,11 @@ interface UserDao {
     // Query to get a list of non-overdue and non-completed TaskSummary for a user, ordered by lastEdited
     @Query(
         """
-        SELECT Task.taskId, Task.taskTitle, Task.taskAbstract, Task.lastEdited, Task.priority, Task.dueDate, Task.complete
+        SELECT Task.taskId, Task.taskTitle, Task.taskAbstract, Task.lastEdited, Task.priority, Task.dueDate, Task.complete, Task.score
         FROM Task
         INNER JOIN UserTaskRelation ON Task.taskId = UserTaskRelation.taskId
         WHERE UserTaskRelation.userId = :id AND Task.dueDate >= :currentDate AND Task.complete = 0
-        ORDER BY Task.lastEdited DESC
+        ORDER BY Task.score DESC
         """
     )
     suspend fun getNonOverdueTasksById(id: Int, currentDate: Long): List<TaskSummary>
@@ -153,11 +151,11 @@ interface UserDao {
     @Query(
         """
         SELECT Task.taskId, Task.taskTitle, Task.taskAbstract, Task.lastEdited, 
-           Task.priority, Task.dueDate, Task.complete
+           Task.priority, Task.dueDate, Task.complete, Task.score
         FROM Task
         INNER JOIN UserTaskRelation ON Task.taskId = UserTaskRelation.taskId
         WHERE UserTaskRelation.userId = :id AND Task.dueDate >= :currentDate AND Task.complete = 0
-        ORDER BY Task.lastEdited DESC
+        ORDER BY Task.score DESC
     """
     )
     fun getNonOverdueTasksByIdPaged(id: Int, currentDate: Long): PagingSource<Int, TaskSummary>
@@ -186,12 +184,44 @@ interface TaskDao {
     // Insert or update a Task and create a relation to the User if it's a new Task
     @Transaction
     suspend fun upsertTask(task: Task, userId: Int) {
-        val rowId = upsert(task)
-        if (task.taskId == 0) { // New note
+        // Calculate the score based on your algorithm
+        val updatedTask = task.copy(score = calculateTaskScore(task))
+
+        // Insert or update the task with the updated score
+        val rowId = upsert(updatedTask)
+
+        // If it's a new task, create the UserTaskRelation
+        if (task.taskId == 0) {
             val taskId = getByRowId(rowId)
             insertRelation(UserTaskRelation(userId, taskId))
         }
     }
+
+    @Query("SELECT * FROM Task ORDER BY score DESC, dueDate ASC, priority DESC")
+    fun getTasksOrderedByScorePaged(): PagingSource<Int, TaskSummary>
+    @Query("SELECT * FROM Task ORDER BY score DESC, dueDate ASC, priority DESC")
+    suspend fun getTasksOrderedByScore(): List<Task>
+
+
+
+    private fun calculateTaskScore(task: Task): Double {
+        val currentTime = System.currentTimeMillis()
+        val hoursUntilDue = if (task.dueDate != null) {
+            ((task.dueDate.time - currentTime) / (1000 * 60 * 60)).toDouble()
+        } else {
+            Double.MAX_VALUE // No due date = lowest priority
+        }
+
+        val weightDueDate = -1000.0
+        val weightPriority = 10.0
+        val weightEstimatedTime = 0.5
+
+        return (weightDueDate * hoursUntilDue) +
+                (weightPriority * task.priority) +
+                (weightEstimatedTime * task.estimatedTime)
+    }
+
+
 
     // Query to count the number of notes a user has
     @Query(

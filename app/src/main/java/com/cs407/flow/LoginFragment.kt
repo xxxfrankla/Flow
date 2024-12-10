@@ -15,6 +15,7 @@ import com.cs407.flow.data.User
 import com.cs407.flow.data.resetDatabase
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.cs407.flow.data.resetDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,6 +33,7 @@ class LoginFragment(
     private lateinit var errorTextView: TextView
 
     private lateinit var userViewModel: UserViewModel
+
     private lateinit var userPasswdKV: SharedPreferences
     private lateinit var taskDB: TaskDatabase
 
