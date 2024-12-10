@@ -3,10 +3,11 @@
     <solid android:color="@color/cardview_light_background" />
     <corners android:radius="18dp" />
     <stroke
-            android:width="20dp"
+            android:width="2dp"
             android:color="@color/cardview_shadow_end_color" /> <!-- Optional border -->
     <padding
             android:left="18dp"
             android:top="18dp"
-            android:right="18dp" />
+            android:right="18dp"
+            android:bottom="18dp"/>
 </shape>
